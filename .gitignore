@@ -1,0 +1,45 @@
+node_modules
+dist
+.smoke
+.smoke-collab
+.smoke-crdt
+.smoke-converge
+.smoke-conflict-ui
+.smoke-files
+.smoke-io
+.smoke-mobile
+.smoke-richtext
+.smoke-collab
+.smoke-collab-richtext
+.smoke-sheets
+.smoke-deploy
+.smoke-incremental
+.smoke-cards
+*.tsbuildinfo
+.DS_Store
+
+# 服务端运行期数据：SQLite 库与日志。
+# 这里绝不能提交 —— 里面有公司知识库的全部正文与附件。
+data/
+*.db
+*.db-wal
+*.db-shm
+
+# 运行时日志 / 截图 / 进程文件。
+# 里面有**真实实例的界面截图**（含公司知识库正文），同样不能外传。
+reports/
+deploy/
+docs/shots/
+*.log
+*.err
+*.pid
+
+# 临时脚本与运行日志（调试留下的，别提交）。
+_bak_*.md
+_fullrun*.log
+_fullrun*.err
+_inline-srv.*
+_fresh-srv.*
+_ph-srv.*
+_bf-srv.*
+_*.mjs

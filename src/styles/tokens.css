@@ -1,0 +1,103 @@
+/* ============================================================
+   语雀视觉 Token —— 全站唯一的颜色 / 间距 / 字体来源
+   改这里 = 改全站。所有组件禁止写死颜色值。
+   ============================================================ */
+
+:root {
+  /* ---- 品牌主色：语雀蓝 ---- */
+  --yq-primary: #4a90e2;
+  --yq-primary-hover: #3a7fd0;
+  --yq-primary-active: #2f6cbb;
+  --yq-primary-light: #e8f1fc;
+  --yq-primary-light-2: #d4e6fa;
+  --yq-primary-border: #a8cdf5;
+  --yq-primary-rgb: 74, 144, 226;
+
+  /* ---- 功能色：语雀的绿 + 号 ---- */
+  --yq-green: #46b160;
+  --yq-green-hover: #3a9c51;
+  --yq-green-light: #e8f6ed;
+  --yq-green-rgb: 70, 177, 96;
+
+  /* ---- 中性色阶 ---- */
+  --yq-text-1: #1f2329; /* 主标题 / 正文强调 */
+  --yq-text-2: #51565d; /* 正文 */
+  --yq-text-3: #8a9099; /* 次要 / 占位 */
+  --yq-text-4: #b4bac1; /* 极弱 / 禁用 */
+  --yq-text-inverse: #ffffff;
+
+  --yq-bg-1: #ffffff; /* 卡片 / 面板 */
+  --yq-bg-2: #f7f8fa; /* 页面底色 */
+  --yq-bg-3: #f0f2f5; /* 悬浮 / 分组 */
+  --yq-bg-4: #e8ebef; /* 深一档悬浮 */
+  --yq-bg-mask: rgba(0, 0, 0, 0.45);
+
+  --yq-border-1: #e5e8eb; /* 常规描边 */
+  --yq-border-2: #d5d9de; /* 强调描边 */
+  --yq-border-3: #c0c5cc; /* 强描边 */
+
+  /* ---- 语义色 ---- */
+  --yq-danger: #e34d59;
+  --yq-danger-light: #fdedee;
+  --yq-warning: #f5a623;
+  --yq-warning-light: #fef6e6;
+  --yq-success: var(--yq-green);
+  --yq-info: var(--yq-primary);
+
+  /* ---- 字号 ---- */
+  --yq-font-xs: 12px;
+  --yq-font-sm: 13px;
+  --yq-font-base: 14px;
+  --yq-font-md: 15px;
+  --yq-font-lg: 16px;
+  --yq-font-xl: 18px;
+  --yq-font-2xl: 22px;
+  --yq-font-3xl: 28px;
+
+  /* ---- 行高 ---- */
+  --yq-lh-tight: 1.4;
+  --yq-lh-base: 1.6;
+  --yq-lh-loose: 1.8;
+
+  /* ---- 圆角：语雀偏方，全站小圆角 ---- */
+  --yq-radius-xs: 2px;
+  --yq-radius-sm: 4px;
+  --yq-radius-md: 6px;
+  --yq-radius-lg: 8px;
+  --yq-radius-xl: 12px;
+  --yq-radius-full: 999px;
+
+  /* ---- 阴影 ---- */
+  --yq-shadow-xs: 0 1px 2px rgba(31, 35, 41, 0.06);
+  --yq-shadow-sm: 0 2px 8px rgba(31, 35, 41, 0.08);
+  --yq-shadow-md: 0 4px 16px rgba(31, 35, 41, 0.1);
+  --yq-shadow-lg: 0 8px 32px rgba(31, 35, 41, 0.14);
+  --yq-shadow-primary: 0 2px 8px rgba(var(--yq-primary-rgb), 0.32);
+
+  /* ---- 布局尺寸 ---- */
+  --yq-header-h: 52px;
+  --yq-sidebar-w: 240px;
+  --yq-tree-w: 260px;
+  --yq-outline-w: 220px;
+  --yq-content-max: 800px;
+
+  /* ---- 动效 ---- */
+  --yq-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --yq-dur-fast: 0.12s;
+  --yq-dur-base: 0.2s;
+
+  /* ---- 层级 ---- */
+  --yq-z-header: 100;
+  --yq-z-dropdown: 1000;
+  --yq-z-popover: 1100;
+  --yq-z-modal: 1200;
+  --yq-z-toast: 1300;
+  --yq-z-tooltip: 1400;
+
+  /* ---- 字体栈 ---- */
+  --yq-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial,
+    sans-serif;
+  --yq-font-mono: 'SFMono-Regular', Menlo, Monaco, Consolas, 'Liberation Mono',
+    'Courier New', monospace;
+}

@@ -1,0 +1,200 @@
+/* ============================================================
+   打印 / 另存为 PDF
+   ------------------------------------------------------------
+   **这不是「我们生成一个 PDF 文件」**，而是把当前页面整理成适合打印的版式，
+   然后交给浏览器的打印对话框（用户在那里选「另存为 PDF」）。
+
+   为什么不自己生成 PDF 文件：
+   生成一份带中文字形的 PDF 要内嵌字体子集（一个中文字体就好几 MB），
+   而这个项目最看重的是「内网机器上少一个依赖」。
+   浏览器本来就有排版引擎，中文、表格、图片它都比我们写得对。
+   所以这里做的是**把界面剥干净**，而不是造一个更差的排版器。
+
+   界面上写的是「打印 / 另存为 PDF」，**不写「导出 PDF」** ——
+   后者会让人以为点下去就有个文件落到磁盘上。
+   ============================================================ */
+
+/* 打印时页边距留够：默认的对边距会把内容挤成一条 */
+@page {
+  margin: 18mm 16mm;
+}
+
+/**
+ * 平时不显示、只在打印时出现的页眉。
+ * 内容在 DocPage 里按「打印页眉」那节渲染。
+ */
+.yq-print-header {
+  display: none;
+}
+
+@media print {
+  /* 打印底色一律去掉：浏览器默认不打印背景色，
+     而这块浅灰如果按屏幕上的样子理解，出来会是「一大块白里什么都没有」。
+     靠边框和留白区分层级，不靠底色 —— 黑白打印也是这个道理。 */
+  html, body {
+    background: #fff !important;
+  }
+
+  /* ---- 界面外壳全部退场 ----
+     这些类名是**对着打印截图一个个核出来的**，不是猜的。
+     第一版只写了顶栏/侧栏/操作条，结果打印出来带着
+     左侧目录树、编辑工具条、协作条、「已保存」提示和块前面的绿色加号 ——
+     而任何静态检查都发现不了这些，因为它们全都是「正常的」界面元素。
+
+     而且第一版把 `.yq-doc-nav` 当成了左侧目录树 —— 其实那是**底部的
+     「上一篇 / 下一篇」**。真正的目录树根容器是 `.yq-tree`。
+     猜类名的代价就是这种：漏掉一个该藏的（目录树整棵印在纸面上）。
+
+     所以这里改成**按前缀整族隐藏**，而不是一个个列：
+     工具条一会儿叫 yq-tb-btn、一会儿叫 yq-tb-select、一会儿 yq-tb-insert ——
+     列全了还是会漏下一个新增的，而「工具条就是 yq-tb- 开头的那些」
+     这条规则不会漏。
+  */
+  .yq-topbar,
+  .yq-sidenav,
+  .yq-sidenav-mask,
+  .yq-doc-bar,
+  .yq-doc-nav,           /* 底部的「上一篇 / 下一篇」—— 纸上点不动，属于外壳 */
+  .yq-doc-mobilebar,
+  .yq-doc-corner,
+  .yq-doc-members,
+  .yq-doc-backlinks,
+  .yq-doc-drawermask,
+  .yq-outline,
+  .yq-comments,
+  .yq-toaster,
+  .yq-doc-watermark,
+  [class^="yq-tree"],           /* 左侧目录树整族 */
+  [class*=" yq-tree"] {
+    display: none !important;
+  }
+
+  /* 工具条整族（yq-tb-*）、协作条整族（yq-doc-collab*）、同步状态整族 */
+  [class^="yq-tb-"],
+  [class*=" yq-tb-"],
+  [class^="yq-doc-collab"],
+  [class*=" yq-doc-collab"],
+  [class^="yq-collab-"],
+  [class*=" yq-collab-"],
+  [class^="yq-syncstatus"],
+  [class*=" yq-syncstatus"] {
+    display: none !important;
+  }
+
+  /* 块的操作件：左侧那个 + 号、拖拽柄、「...」菜单。
+     它们只在 hover 时显形，但打印时鼠标位置是随机的 ——
+     悬停态会被浏览器按最后的位置还原，于是纸面上凭空多出一个绿色加号。 */
+  .yq-block-add,
+  .yq-block-grip,
+  .yq-block-more,
+  .yq-block-gutter {
+    display: none !important;
+  }
+
+  /**
+   * 卡片**里的**控件退场，卡片的文字内容留着。
+   *
+   * 按「容器里的可交互元素」来写，而不是把 `yq-kc-btn` / `yq-kc-select` /
+   * `yq-kc-map-text` 这些名字一个个列出来 —— 卡片有二十多种，
+   * 控件的类名各有各的前缀，列全了还是会漏下一个新增的。
+   *
+   * 为什么要藏：列卡片的「+ / 删除」、看板的移动、文件卡的「下载」——
+   * 这些在纸上点不动，而一个点不动的「下载」按钮印出来反而误导人。
+   * 而「用-纯文本 + Markdown 语法写点内容」这种**正文**必须留着。
+   */
+  .yq-kc-host button,
+  .yq-kc-host input,
+  .yq-kc-host select,
+  .yq-kc-host textarea,
+  .yq-kc-host a[href][download] {
+    display: none !important;
+  }
+  /* 块本体要吃掉左侧留出来给操作件的那条沟 */
+  .yq-block {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+  }
+
+  /* 正文占满整页：屏幕上它被侧栏和顶栏挤到中间一窄条，
+     直接打印的话每行只有三十来个字，读起来很难受。 */
+  .yq-body,
+  .yq-main,
+  .yq-main-full,
+  .yq-docpage,
+  .yq-doc-main,
+  .yq-doc-scroll,
+  .yq-doc-content {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block !important;
+    overflow: visible !important;
+  }
+
+  /* ---- 页眉 ---- */
+  .yq-print-header {
+    display: block !important;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #d5d9de;
+  }
+  .yq-print-header-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1f2329;
+    line-height: 1.4;
+  }
+  .yq-print-header-meta {
+    margin-top: 5px;
+    font-size: 11px;
+    color: #646a73;
+  }
+  .yq-print-header-meta span + span::before {
+    content: '·';
+    margin: 0 6px;
+    color: #bbbfc4;
+  }
+
+  /* ---- 正文排版 ---- */
+  .yq-editor,
+  .yq-block {
+    /* 编辑器在屏幕上是 contentEditable，光标占位和选区高亮不该进纸面 */
+    caret-color: transparent !important;
+  }
+  .yq-block {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  /* 标题不要孤零零留在页尾 */
+  h1, h2, h3, h4 {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+  /* 代码块和表格允许跨页，但保留边框 */
+  pre, .yq-md table {
+    break-inside: auto;
+    page-break-inside: auto;
+  }
+  pre {
+    white-space: pre-wrap !important;
+    word-break: break-word !important;
+    border: 1px solid #d5d9de !important;
+  }
+  /* 图片不出页边界 */
+  img {
+    max-width: 100% !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  a {
+    color: inherit !important;
+    text-decoration: none !important;
+    /* 外链的 href 印在后面，否则「参考资料」那一段全是死链接 */
+  }
+  a[href^="http"]::after {
+    content: ' (' attr(href) ')';
+    font-size: 10px;
+    color: #8f959e;
+  }
+}

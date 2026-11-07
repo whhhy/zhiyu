@@ -1,0 +1,64 @@
+.yq-toaster {
+  position: fixed;
+  top: 68px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: var(--yq-z-toast);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  pointer-events: none;
+}
+
+.yq-toast {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  background: var(--yq-bg-1);
+  border: 1px solid var(--yq-border-1);
+  border-radius: var(--yq-radius-md);
+  box-shadow: var(--yq-shadow-md);
+  font-size: var(--yq-font-sm);
+  color: var(--yq-text-1);
+  cursor: pointer;
+  pointer-events: auto;
+  max-width: 420px;
+}
+.yq-toast-icon {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+.yq-toast-success .yq-toast-icon { background: var(--yq-green); }
+.yq-toast-info .yq-toast-icon { background: var(--yq-primary); }
+.yq-toast-error .yq-toast-icon { background: var(--yq-danger); }
+.yq-toast-text { line-height: 1.4; }
+
+/*
+ * 带动作的提示条（2026-10-16，删空间后的「撤销」）。
+ *
+ * 提示条整体是「点一下关掉」，所以动作按钮要自己明确成按钮的样式 ——
+ * 否则用户分不清这一行到底是不是可点的。
+ */
+.yq-toast-action {
+  flex-shrink: 0;
+  margin-left: 4px;
+  padding: 3px 10px;
+  border: 1px solid var(--yq-primary);
+  border-radius: var(--yq-radius-sm);
+  background: transparent;
+  color: var(--yq-primary);
+  font-size: var(--yq-font-xs);
+  font-weight: 600;
+  cursor: pointer;
+}
+.yq-toast-action:hover { background: var(--yq-primary); color: #fff; }

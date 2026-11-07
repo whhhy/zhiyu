@@ -1,0 +1,528 @@
+/* ============================================================
+   基础组件样式
+   ============================================================ */
+
+/* ---------------- Button ---------------- */
+.yq-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border-radius: var(--yq-radius-md);
+  font-weight: 500;
+  white-space: nowrap;
+  transition: all var(--yq-dur-fast) var(--yq-ease);
+  border: 1px solid transparent;
+  user-select: none;
+}
+.yq-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.yq-btn-sm { height: 26px; padding: 0 9px; font-size: var(--yq-font-xs); }
+.yq-btn-md { height: 32px; padding: 0 14px; font-size: var(--yq-font-sm); }
+.yq-btn-lg { height: 38px; padding: 0 20px; font-size: var(--yq-font-base); }
+.yq-btn-block { display: flex; width: 100%; }
+.yq-btn-icon { display: inline-flex; line-height: 1; }
+
+.yq-btn-default {
+  background: var(--yq-bg-1);
+  border-color: var(--yq-border-2);
+  color: var(--yq-text-2);
+}
+.yq-btn-default:hover:not(:disabled) {
+  border-color: var(--yq-primary);
+  color: var(--yq-primary);
+}
+
+.yq-btn-primary {
+  background: var(--yq-primary);
+  color: #fff;
+  box-shadow: var(--yq-shadow-xs);
+}
+.yq-btn-primary:hover:not(:disabled) { background: var(--yq-primary-hover); }
+.yq-btn-primary:active:not(:disabled) { background: var(--yq-primary-active); }
+
+.yq-btn-green {
+  background: var(--yq-green);
+  color: #fff;
+  box-shadow: var(--yq-shadow-xs);
+}
+.yq-btn-green:hover:not(:disabled) { background: var(--yq-green-hover); }
+
+/* 文案 span 必须继承按钮自身颜色：
+   写死灰色会盖掉 .yq-btn-primary / .yq-btn-green / .yq-btn-danger 的白字，
+   导致全站主按钮看起来像「禁用态」。 */
+.yq-btn-text {
+  background: transparent;
+  color: inherit;
+}
+
+/* ⚠️ 这里原来还有一条 `.yq-btn-text:hover:not(:disabled) { background: var(--yq-bg-3); }`
+ *
+ *   它把**浅色背景画在文字上**，而文字颜色是 `color: inherit` ——
+ *   在主按钮上继承到的是 `#fff`（白字）。于是鼠标一移上去，
+ *   主按钮中间那几个字就成了**白字压 #f0f2f5**，**整块看不见**，
+ *   只剩一个白方块（`＋` 图标在 span 外面，所以它还在）。
+ *
+ *   症状离原因很远：看着像「文字选中变白了」，其实是被自己的 hover 底色吃掉的。
+ *
+ *   为什么删而不是修：hover 本来就是**按钮**的职责，
+ *   而且按钮自己已经有一整套（default 变边框 + 字色，
+ *   primary / green / danger 变背景）。在文字 span 上再叠一层，
+ *   只会让「按钮里有一块会单独变色」。
+ *   —— 顺带它在普通按钮上也不对：白底按钮中间浮一个灰块，更怪。
+ */
+
+.yq-btn-ghost {
+  background: transparent;
+  color: var(--yq-text-2);
+  border-color: var(--yq-border-1);
+}
+.yq-btn-ghost:hover:not(:disabled) { border-color: var(--yq-primary); color: var(--yq-primary); }
+
+.yq-btn-danger { background: var(--yq-danger); color: #fff; }
+.yq-btn-danger:hover:not(:disabled) { background: #d33c48; }
+
+/* ---------------- IconButton ---------------- */
+.yq-iconbtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--yq-radius-sm);
+  color: var(--yq-text-3);
+  transition: all var(--yq-dur-fast) var(--yq-ease);
+  flex-shrink: 0;
+}
+.yq-iconbtn:hover { background: var(--yq-bg-3); color: var(--yq-text-1); }
+.yq-iconbtn.is-active { background: var(--yq-primary-light); color: var(--yq-primary); }
+
+/* ---------------- Input ---------------- */
+.yq-input {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--yq-bg-1);
+  border: 1px solid var(--yq-border-2);
+  border-radius: var(--yq-radius-md);
+  padding: 0 10px;
+  transition: all var(--yq-dur-fast) var(--yq-ease);
+}
+.yq-input.is-focused { border-color: var(--yq-primary); box-shadow: 0 0 0 2px var(--yq-primary-light); }
+.yq-input-sm { height: 28px; }
+.yq-input-md { height: 34px; }
+.yq-input-lg { height: 42px; }
+.yq-input-el {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: var(--yq-font-sm);
+}
+.yq-input-lg .yq-input-el { font-size: var(--yq-font-base); }
+.yq-input-el::placeholder { color: var(--yq-text-4); }
+.yq-input-affix { color: var(--yq-text-4); display: inline-flex; align-items: center; flex-shrink: 0; }
+
+/* ---------------- Select ---------------- */
+.yq-select { position: relative; display: inline-flex; }
+.yq-select select {
+  appearance: none;
+  border: 1px solid var(--yq-border-2);
+  border-radius: var(--yq-radius-md);
+  background: var(--yq-bg-1);
+  padding: 0 26px 0 10px;
+  cursor: pointer;
+  outline: none;
+  transition: border-color var(--yq-dur-fast);
+}
+.yq-select-sm select { height: 28px; font-size: var(--yq-font-xs); }
+.yq-select-md select { height: 34px; font-size: var(--yq-font-sm); }
+.yq-select select:hover { border-color: var(--yq-primary); }
+/* 禁用态（2026-08-18 补）：`disabled` 是真的传到了 `<select>` 上，
+   所以**必须让它看起来也是禁用的** ——
+   否则用户看到一个活生生的下拉、点下去没反应，
+   那和「没禁用」在用户眼里是一回事。 */
+.yq-select.is-disabled select {
+  cursor: not-allowed;
+  background: var(--yq-bg-2);
+  color: var(--yq-text-3);
+  border-color: var(--yq-border-1);
+}
+.yq-select.is-disabled select:hover { border-color: var(--yq-border-1); }
+.yq-select.is-disabled .yq-select-arrow { color: var(--yq-text-4); }
+.yq-select-arrow {
+  position: absolute;
+  right: 9px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--yq-text-4);
+  font-size: 10px;
+}
+
+/* ---------------- Switch ---------------- */
+.yq-switch {
+  position: relative;
+  border-radius: var(--yq-radius-full);
+  background: var(--yq-border-3);
+  transition: background var(--yq-dur-base) var(--yq-ease);
+  flex-shrink: 0;
+}
+.yq-switch-md { width: 40px; height: 22px; }
+.yq-switch-sm { width: 32px; height: 18px; }
+.yq-switch.is-on { background: var(--yq-primary); }
+.yq-switch-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: var(--yq-shadow-xs);
+  transition: transform var(--yq-dur-base) var(--yq-ease);
+}
+.yq-switch-md .yq-switch-knob { width: 18px; height: 18px; }
+.yq-switch-sm .yq-switch-knob { width: 14px; height: 14px; }
+.yq-switch-md.is-on .yq-switch-knob { transform: translateX(18px); }
+.yq-switch-sm.is-on .yq-switch-knob { transform: translateX(14px); }
+.yq-switch:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ---------------- Checkbox ---------------- */
+.yq-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  user-select: none;
+}
+.yq-checkbox input { display: none; }
+.yq-checkbox-box {
+  width: 15px;
+  height: 15px;
+  border: 1px solid var(--yq-border-3);
+  border-radius: var(--yq-radius-xs);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  transition: all var(--yq-dur-fast) var(--yq-ease);
+  flex-shrink: 0;
+}
+.yq-checkbox:hover .yq-checkbox-box { border-color: var(--yq-primary); }
+.yq-checkbox.is-checked .yq-checkbox-box {
+  background: var(--yq-primary);
+  border-color: var(--yq-primary);
+}
+.yq-checkbox-label { font-size: var(--yq-font-sm); color: var(--yq-text-2); }
+
+/* ---------------- Radio ---------------- */
+.yq-radio { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; user-select: none; }
+.yq-radio input { display: none; }
+.yq-radio-dot {
+  width: 15px;
+  height: 15px;
+  border: 1px solid var(--yq-border-3);
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--yq-dur-fast) var(--yq-ease);
+}
+.yq-radio.is-checked .yq-radio-dot { border-color: var(--yq-primary); border-width: 4.5px; }
+.yq-radio-label { font-size: var(--yq-font-sm); color: var(--yq-text-2); }
+
+/* ---------------- Modal ---------------- */
+.yq-modal-mask {
+  position: fixed;
+  inset: 0;
+  background: var(--yq-bg-mask);
+  z-index: var(--yq-z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: yq-mask-in var(--yq-dur-base) var(--yq-ease);
+}
+@keyframes yq-mask-in { from { opacity: 0; } to { opacity: 1; } }
+.yq-modal {
+  background: var(--yq-bg-1);
+  border-radius: var(--yq-radius-lg);
+  box-shadow: var(--yq-shadow-lg);
+  max-width: 100%;
+  max-height: 86vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.yq-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--yq-border-1);
+  flex-shrink: 0;
+}
+.yq-modal-title { font-size: var(--yq-font-lg); font-weight: 600; color: var(--yq-text-1); }
+.yq-modal-body { padding: 20px; overflow-y: auto; flex: 1; }
+.yq-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 20px;
+  border-top: 1px solid var(--yq-border-1);
+  flex-shrink: 0;
+}
+
+/* ---------------- Drawer ---------------- */
+.yq-drawer-mask {
+  position: fixed;
+  inset: 0;
+  background: var(--yq-bg-mask);
+  z-index: var(--yq-z-modal);
+  animation: yq-mask-in var(--yq-dur-base) var(--yq-ease);
+}
+.yq-drawer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: var(--yq-bg-1);
+  box-shadow: var(--yq-shadow-lg);
+  display: flex;
+  flex-direction: column;
+  animation: yq-drawer-in var(--yq-dur-base) var(--yq-ease);
+}
+.yq-drawer-right { right: 0; }
+.yq-drawer-left { left: 0; }
+@keyframes yq-drawer-in { from { transform: translateX(100%); } to { transform: translateX(0); } }
+.yq-drawer-left { animation-name: yq-drawer-in-left; }
+@keyframes yq-drawer-in-left { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+.yq-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--yq-border-1);
+}
+.yq-drawer-header h3 { font-size: var(--yq-font-md); font-weight: 600; }
+.yq-drawer-body { flex: 1; overflow-y: auto; }
+
+/* ---------------- Popover ---------------- */
+.yq-popover-wrap { display: inline-flex; position: relative; }
+.yq-popover {
+  position: fixed;
+  background: var(--yq-bg-1);
+  border: 1px solid var(--yq-border-1);
+  border-radius: var(--yq-radius-md);
+  box-shadow: var(--yq-shadow-md);
+  z-index: var(--yq-z-popover);
+  padding: 4px;
+  min-width: 120px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+/* ---------------- Menu ---------------- */
+.yq-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 10px;
+  border-radius: var(--yq-radius-sm);
+  font-size: var(--yq-font-sm);
+  color: var(--yq-text-2);
+  text-align: left;
+  transition: background var(--yq-dur-fast);
+}
+.yq-menu-item:hover { background: var(--yq-bg-3); color: var(--yq-text-1); }
+.yq-menu-item.is-danger { color: var(--yq-danger); }
+.yq-menu-item.is-danger:hover { background: var(--yq-danger-light); }
+.yq-menu-item.is-disabled { opacity: 0.45; cursor: not-allowed; }
+.yq-menu-icon { display: inline-flex; width: 16px; justify-content: center; flex-shrink: 0; }
+.yq-menu-text { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.yq-menu-trailing { color: var(--yq-text-4); font-size: var(--yq-font-xs); }
+.yq-menu-divider { height: 1px; background: var(--yq-border-1); margin: 4px 0; }
+.yq-menu-label {
+  padding: 6px 10px 4px;
+  font-size: var(--yq-font-xs);
+  color: var(--yq-text-4);
+  font-weight: 500;
+}
+
+/* ---------------- Tooltip ---------------- */
+.yq-tooltip-wrap { position: relative; display: inline-flex; }
+.yq-tooltip {
+  position: absolute;
+  background: rgba(31, 35, 41, 0.92);
+  color: #fff;
+  font-size: var(--yq-font-xs);
+  padding: 4px 8px;
+  border-radius: var(--yq-radius-sm);
+  white-space: nowrap;
+  z-index: var(--yq-z-tooltip);
+  pointer-events: none;
+  animation: yq-fade-in var(--yq-dur-fast) var(--yq-ease);
+}
+.yq-tooltip-top { bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); }
+.yq-tooltip-bottom { top: calc(100% + 6px); left: 50%; transform: translateX(-50%); }
+.yq-tooltip-left { right: calc(100% + 6px); top: 50%; transform: translateY(-50%); }
+.yq-tooltip-right { left: calc(100% + 6px); top: 50%; transform: translateY(-50%); }
+
+/*
+ * portal 版提示条（2026-10-16）。
+ *
+ * 挂到 `body` 上、用 fixed 定位，位置由 JS 按触发元素算好后写在行内样式里。
+ * **不套**上面那几个 `yq-tooltip-top/bottom/...` ——
+ * 它们是给「就地绝对定位」用的，和行内的 transform 会打架。
+ *
+ * 为什么要 portal：祖先里只要有一个滚动容器就能把它裁掉。
+ * 实测 `.yq-toolbar`（`overflow-x:auto` 会连带把 `overflow-y` 算成 auto）
+ * 就把整条裁没了 —— 文档见 ui/index.tsx 的 Tooltip。
+ */
+.yq-tooltip-fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  margin: 0;
+}
+
+/* ---------------- Avatar ---------------- */
+.yq-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--yq-radius-full);
+  background: linear-gradient(135deg, #6ba4e8, #4a90e2);
+  color: #fff;
+  font-weight: 600;
+  flex-shrink: 0;
+  user-select: none;
+  overflow: hidden;
+  line-height: 1;
+}
+.yq-avatar-rest { background: var(--yq-bg-4); color: var(--yq-text-3); }
+.yq-avatar-group { display: inline-flex; }
+.yq-avatar-group .yq-avatar { margin-left: -7px; border: 2px solid #fff; }
+.yq-avatar-group .yq-avatar:first-child { margin-left: 0; }
+
+/* ---------------- Tag ---------------- */
+.yq-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: var(--yq-radius-sm);
+  font-weight: 500;
+  white-space: nowrap;
+}
+.yq-tag-md { height: 20px; padding: 0 7px; font-size: var(--yq-font-xs); }
+.yq-tag-sm { height: 17px; padding: 0 5px; font-size: 11px; }
+.yq-tag-default { background: var(--yq-bg-3); color: var(--yq-text-3); }
+.yq-tag-primary { background: var(--yq-primary-light); color: var(--yq-primary); }
+.yq-tag-green { background: var(--yq-green-light); color: var(--yq-green); }
+.yq-tag-warning { background: var(--yq-warning-light); color: #c07800; }
+.yq-tag-danger { background: var(--yq-danger-light); color: var(--yq-danger); }
+.yq-tag-close { cursor: pointer; opacity: 0.6; }
+.yq-tag-close:hover { opacity: 1; }
+
+/* ---------------- Empty ---------------- */
+.yq-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 20px;
+  gap: 8px;
+}
+.yq-empty-icon { font-size: 40px; opacity: 0.5; }
+.yq-empty-text { color: var(--yq-text-3); font-size: var(--yq-font-sm); }
+.yq-empty-action { margin-top: 8px; }
+
+/* ---------------- Tabs ---------------- */
+.yq-tabs {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  border-bottom: 1px solid var(--yq-border-1);
+}
+.yq-tab {
+  position: relative;
+  padding: 9px 14px;
+  font-size: var(--yq-font-sm);
+  color: var(--yq-text-3);
+  transition: color var(--yq-dur-fast);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.yq-tab:hover { color: var(--yq-text-1); }
+.yq-tab.is-active { color: var(--yq-primary); font-weight: 500; }
+.yq-tab.is-active::after {
+  content: '';
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: -1px;
+  height: 2px;
+  background: var(--yq-primary);
+  border-radius: 2px 2px 0 0;
+}
+.yq-tab-count {
+  font-size: 11px;
+  background: var(--yq-bg-3);
+  color: var(--yq-text-3);
+  border-radius: var(--yq-radius-full);
+  padding: 0 5px;
+  min-width: 16px;
+  text-align: center;
+}
+.yq-tab.is-active .yq-tab-count { background: var(--yq-primary-light); color: var(--yq-primary); }
+
+/* ---------------- Progress ---------------- */
+.yq-progress {
+  height: 6px;
+  background: var(--yq-bg-3);
+  border-radius: var(--yq-radius-full);
+  overflow: hidden;
+}
+.yq-progress-bar { height: 100%; border-radius: var(--yq-radius-full); transition: width var(--yq-dur-base) var(--yq-ease); }
+
+/* ---------------- Skeleton ---------------- */
+.yq-skeleton {
+  background: linear-gradient(90deg, var(--yq-bg-3) 25%, var(--yq-bg-4) 37%, var(--yq-bg-3) 63%);
+  background-size: 400% 100%;
+  animation: yq-skeleton 1.4s ease-in-out infinite;
+}
+@keyframes yq-skeleton {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+
+/* ---------------- Segmented ---------------- */
+.yq-segmented {
+  display: inline-flex;
+  background: var(--yq-bg-3);
+  border-radius: var(--yq-radius-md);
+  padding: 2px;
+  gap: 2px;
+}
+.yq-seg {
+  border-radius: var(--yq-radius-sm);
+  color: var(--yq-text-3);
+  transition: all var(--yq-dur-fast) var(--yq-ease);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 500;
+}
+.yq-segmented-sm .yq-seg { height: 22px; padding: 0 8px; font-size: var(--yq-font-xs); }
+.yq-segmented-md .yq-seg { height: 26px; padding: 0 12px; font-size: var(--yq-font-sm); }
+.yq-seg:hover { color: var(--yq-text-1); }
+.yq-seg.is-active {
+  background: var(--yq-bg-1);
+  color: var(--yq-primary);
+  box-shadow: var(--yq-shadow-xs);
+}
+.yq-seg-icon { display: inline-flex; line-height: 1; }

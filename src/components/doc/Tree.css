@@ -1,0 +1,329 @@
+/* ============================================================
+   知识库目录树
+   ============================================================ */
+
+.yq-tree {
+  width: var(--yq-tree-w);
+  height: 100%;
+  background: var(--yq-bg-1);
+  border-right: 1px solid var(--yq-border-1);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow: hidden;
+  transition: width var(--yq-dur-base) var(--yq-ease);
+}
+
+.yq-tree-collapsed { width: 46px; }
+
+/* 头 */
+.yq-tree-head {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 8px 10px 12px;
+  border-bottom: 1px solid var(--yq-border-1);
+  flex-shrink: 0;
+}
+.yq-tree-book {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  text-align: left;
+  border-radius: var(--yq-radius-sm);
+  padding: 2px 4px;
+  transition: background var(--yq-dur-fast);
+}
+.yq-tree-book:hover { background: var(--yq-bg-2); }
+.yq-tree-book-avatar { font-size: 15px; flex-shrink: 0; }
+.yq-tree-book-name {
+  font-size: var(--yq-font-sm);
+  font-weight: 600;
+  color: var(--yq-text-1);
+}
+/* 书名后面的锁：只在非「空间内公开」时出现（见 Tree.tsx 里的判据） */
+.yq-tree-book-lock {
+  font-size: 11px;
+  line-height: 1;
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+.yq-tree-more {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--yq-radius-sm);
+  color: var(--yq-text-4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+  transition: all var(--yq-dur-fast);
+}
+.yq-tree-more:hover { background: var(--yq-bg-3); color: var(--yq-text-1); }
+.yq-tree-collapse {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--yq-radius-sm);
+  color: var(--yq-text-4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+  transition: all var(--yq-dur-fast);
+}
+.yq-tree-collapse:hover { background: var(--yq-bg-3); color: var(--yq-text-1); }
+
+.yq-tree-body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.yq-tree-list {
+  flex: 1;
+  padding: 6px 6px 4px;
+  min-height: 40px;
+}
+.yq-tree-list.drop-inside { background: var(--yq-primary-light); border-radius: var(--yq-radius-md); }
+
+/* 节点 */
+.yq-tree-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 30px;
+  padding-right: 4px;
+  border-radius: var(--yq-radius-md);
+  cursor: pointer;
+  user-select: none;
+  transition: background var(--yq-dur-fast) var(--yq-ease);
+  margin-bottom: 1px;
+}
+.yq-tree-item:hover { background: var(--yq-bg-3); }
+.yq-tree-item.is-active { background: var(--yq-primary-light); }
+.yq-tree-item.is-active .yq-tree-title { color: var(--yq-primary); font-weight: 500; }
+.yq-tree-item.is-dragging { opacity: 0.4; }
+
+/* 拖拽落点指示线 */
+.yq-tree-item.drop-before::before,
+.yq-tree-item.drop-after::after {
+  content: '';
+  position: absolute;
+  left: 8px;
+  right: 6px;
+  height: 2px;
+  background: var(--yq-primary);
+  border-radius: 2px;
+  z-index: 2;
+}
+.yq-tree-item.drop-before::before { top: -1px; }
+.yq-tree-item.drop-after::after { bottom: -1px; }
+.yq-tree-item.drop-inside {
+  background: var(--yq-primary-light);
+  box-shadow: inset 0 0 0 1.5px var(--yq-primary);
+}
+
+.yq-tree-caret {
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  color: var(--yq-text-4);
+  transition: transform var(--yq-dur-fast) var(--yq-ease);
+  flex-shrink: 0;
+  border-radius: 2px;
+}
+.yq-tree-caret:hover { color: var(--yq-text-1); }
+.yq-tree-caret.is-open { transform: rotate(90deg); }
+.yq-tree-caret-ph { pointer-events: none; }
+
+.yq-tree-icon { font-size: 12px; width: 17px; text-align: center; flex-shrink: 0; }
+
+/*
+ * 置顶标记（📌）。
+ *
+ * `flex-shrink: 0` 是必须的：标题那一格是 `flex: 1; min-width: 0`，
+ * 长标题 + 窄侧栏时图钉会被压成一条线，于是「置顶了但看不出来」。
+ * `width` 固定住，别让图钉自己决定占多宽。
+ */
+.yq-tree-pin {
+  flex-shrink: 0;
+  width: 14px;
+  text-align: center;
+  font-size: 11px;
+  line-height: 1;
+}
+
+.yq-tree-title {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--yq-font-sm);
+  color: var(--yq-text-2);
+  text-align: left;
+}
+
+.yq-tree-input {
+  flex: 1;
+  min-width: 0;
+  height: 22px;
+  padding: 0 5px;
+  border: 1px solid var(--yq-primary);
+  border-radius: var(--yq-radius-sm);
+  outline: none;
+  font-size: var(--yq-font-sm);
+  background: var(--yq-bg-1);
+}
+
+/* hover 操作区 */
+.yq-tree-actions {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  opacity: 0;
+  flex-shrink: 0;
+  transition: opacity var(--yq-dur-fast);
+}
+.yq-tree-item:hover .yq-tree-actions { opacity: 1; }
+.yq-tree-act {
+  width: 20px;
+  height: 20px;
+  border-radius: var(--yq-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--yq-text-3);
+  font-size: 11px;
+  transition: all var(--yq-dur-fast);
+}
+.yq-tree-act:hover { background: var(--yq-bg-4); color: var(--yq-text-1); }
+/* 绿色 + 号 —— 语雀识别符号 */
+.yq-tree-act-add { color: var(--yq-green); font-weight: 700; font-size: 13px; }
+.yq-tree-act-add:hover { background: var(--yq-green-light); color: var(--yq-green); }
+
+/* 子级 */
+.yq-tree-children { position: relative; }
+.yq-tree-children::before {
+  content: '';
+  position: absolute;
+  left: 13px;
+  top: 0;
+  bottom: 4px;
+  width: 1px;
+  background: var(--yq-border-1);
+  opacity: 0.7;
+}
+
+.yq-tree-empty {
+  padding: 24px 12px;
+  text-align: center;
+  color: var(--yq-text-4);
+  font-size: var(--yq-font-xs);
+}
+
+/* 「目录」标题行 —— 2026-10-11 照真实语雀的侧栏形态改的。
+   那边这一行右边挂着新建入口，整棵树上**没有第二个**建新入口；
+   我们原来把绿色 + 放在树下面，等于多了一个语雀没有的按钮，
+   所以这里是「搬上来」，不是「再加一个」。 */
+.yq-tree-cat {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 8px 4px;
+  flex-shrink: 0;
+}
+.yq-tree-cat-title {
+  flex: 1;
+  font-size: var(--yq-font-sm);
+  color: var(--yq-text-3);
+  font-weight: 500;
+  user-select: none;
+}
+.yq-tree-cat-add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 26px;
+  border-radius: var(--yq-radius-sm);
+  color: var(--yq-text-3);
+  transition: all var(--yq-dur-fast) var(--yq-ease);
+}
+.yq-tree-cat-add:hover { background: var(--yq-bg-3); color: var(--yq-green); }
+.yq-tree-add-icon {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: var(--yq-green);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  flex-shrink: 0;
+}
+/* ⚠️ 这里原来还有一条 `.yq-tree-add-more`（目录树**底部工具栏**那个 ⋯）。
+   底部工具栏连同它的 ＋ 一起搬走了（同一个入口不许有两处），
+   但样式规则被忘在这里 —— 组件里已经搜不到这个类名，
+   于是它成了一段**永远命中不到**的死 CSS。
+   删掉的理由不是「不好看」，是它让后来的人以为那个按钮还在：
+   `test-create-denied` ⑩ 就是照着它写的断言，一直红到今天才发现。 */
+
+/* 收起态 */
+.yq-tree-expand {
+  width: 100%;
+  height: 34px;
+  color: var(--yq-text-3);
+  font-size: 14px;
+  border-bottom: 1px solid var(--yq-border-1);
+  transition: all var(--yq-dur-fast);
+}
+.yq-tree-expand:hover { background: var(--yq-bg-2); color: var(--yq-primary); }
+.yq-tree-collapsed-items {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 8px 0;
+  overflow-y: auto;
+}
+.yq-tree-collapsed-item {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--yq-radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  transition: all var(--yq-dur-fast);
+}
+.yq-tree-collapsed-item:hover { background: var(--yq-bg-3); }
+.yq-tree-collapsed-item.is-active { background: var(--yq-primary-light); }
+
+/* ---------------- 目录宽度拖拽把手 ---------------- */
+.yq-tree {
+  position: relative;
+}
+.yq-tree-resizer {
+  position: absolute;
+  /* 必须放在容器内侧：.yq-tree 是 overflow:hidden，
+     放到 right:-3px 会被裁掉，拖不到 */
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 5px;
+  cursor: col-resize;
+  z-index: 20;
+  transition: background var(--yq-dur-fast);
+}
+.yq-tree-resizer:hover,
+.yq-tree-resizer.is-active { background: var(--yq-primary); }

@@ -1,0 +1,199 @@
+/* ============================================================
+   markdown 渲染的排版规则（.yq-md*）
+   ------------------------------------------------------------
+   2026-10-07 从 `pages/Templates.css` 抽出来：这套规则被三个页面用，
+   却只住在「模板」那一个页面的样式文件里 ——
+     · 分享页 PublicDoc 调了 renderMarkdown，但没导入它 → 渲染出来没有排版
+     · 帮助页 Help 的正文本来就是 markdown 源码，却当纯文本输出 → `**` 原样露出
+   「派生值没有单一来源」的又一例。现在由 Templates / PublicDoc / Help 各自导入。
+   ============================================================ */
+.yq-md {
+  font-size: var(--yq-font-base);
+  color: var(--yq-text-2);
+  line-height: var(--yq-lh-loose);
+  word-break: break-word;
+}
+.yq-md > *:first-child {
+  margin-top: 0;
+}
+.yq-md > *:last-child {
+  margin-bottom: 0;
+}
+.yq-md strong {
+  color: var(--yq-text-1);
+  font-weight: 600;
+}
+
+.yq-md-p {
+  margin: 10px 0;
+}
+
+.yq-md-h1 {
+  font-size: var(--yq-font-2xl);
+  font-weight: 700;
+  color: var(--yq-text-1);
+  letter-spacing: -0.2px;
+  margin: 6px 0 18px;
+}
+.yq-md-h2 {
+  font-size: var(--yq-font-xl);
+  font-weight: 600;
+  color: var(--yq-text-1);
+  margin: 28px 0 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--yq-border-1);
+}
+.yq-md-h3 {
+  font-size: var(--yq-font-lg);
+  font-weight: 600;
+  color: var(--yq-text-1);
+  margin: 22px 0 8px;
+}
+.yq-md-h4 {
+  font-size: var(--yq-font-md);
+  font-weight: 600;
+  color: var(--yq-text-1);
+  margin: 18px 0 6px;
+}
+
+.yq-md-list {
+  list-style: disc;
+  padding-left: 22px;
+  margin: 8px 0;
+}
+.yq-md-ol {
+  list-style: decimal;
+}
+.yq-md-li {
+  margin: 4px 0;
+}
+.yq-md-li > .yq-md-list {
+  margin: 4px 0 2px;
+}
+.yq-md-list .yq-md-list {
+  list-style: circle;
+}
+.yq-md-list .yq-md-list .yq-md-list {
+  list-style: square;
+}
+
+.yq-md-todo {
+  margin: 8px 0;
+}
+.yq-md-todo-li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 6px 0;
+}
+.yq-md-todo-box {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 15px;
+  margin-top: 4px;
+  border: 1px solid var(--yq-border-3);
+  border-radius: var(--yq-radius-xs);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: var(--yq-text-inverse);
+}
+.yq-md-todo-box.is-done {
+  background: var(--yq-primary);
+  border-color: var(--yq-primary);
+}
+.yq-md-todo-text {
+  min-width: 0;
+}
+.yq-md-todo-li.is-done .yq-md-todo-text {
+  color: var(--yq-text-4);
+  text-decoration: line-through;
+}
+
+.yq-md-quote {
+  margin: 14px 0;
+  padding: 10px 16px;
+  border-left: 3px solid var(--yq-primary-border);
+  background: var(--yq-bg-2);
+  border-radius: 0 var(--yq-radius-md) var(--yq-radius-md) 0;
+  color: var(--yq-text-2);
+}
+
+.yq-md-pre {
+  position: relative;
+  margin: 14px 0;
+  background: var(--yq-bg-2);
+  border: 1px solid var(--yq-border-1);
+  border-radius: var(--yq-radius-md);
+  overflow: hidden;
+}
+.yq-md-pre-lang {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 2px 9px;
+  font-family: var(--yq-font-mono);
+  font-size: 11px;
+  color: var(--yq-text-4);
+  background: var(--yq-bg-3);
+  border-bottom-left-radius: var(--yq-radius-sm);
+}
+.yq-md-pre pre {
+  margin: 0;
+  padding: 12px 14px;
+  overflow-x: auto;
+}
+.yq-md-pre code {
+  font-family: var(--yq-font-mono);
+  font-size: var(--yq-font-sm);
+  line-height: 1.75;
+  color: var(--yq-text-1);
+  white-space: pre;
+}
+
+.yq-md-code {
+  font-family: var(--yq-font-mono);
+  font-size: 0.92em;
+  color: var(--yq-primary);
+  background: var(--yq-primary-light);
+  border-radius: var(--yq-radius-xs);
+  padding: 1px 5px;
+}
+
+.yq-md-hr {
+  border: none;
+  border-top: 1px solid var(--yq-border-1);
+  margin: 24px 0;
+}
+
+.yq-md-table-wrap {
+  overflow-x: auto;
+  margin: 14px 0;
+}
+.yq-md-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--yq-font-sm);
+  line-height: 1.6;
+}
+.yq-md-table th,
+.yq-md-table td {
+  border: 1px solid var(--yq-border-1);
+  padding: 8px 11px;
+  vertical-align: top;
+}
+.yq-md-table th {
+  background: var(--yq-bg-2);
+  color: var(--yq-text-1);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.yq-md-table td {
+  color: var(--yq-text-2);
+}
+.yq-md-table tbody tr:hover td {
+  background: var(--yq-bg-2);
+}
+
+/* ---------------- 窄屏兜底 ---------------- */

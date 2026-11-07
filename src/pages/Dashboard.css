@@ -1,0 +1,466 @@
+/* ============================================================
+   工作台
+   ============================================================ */
+
+.yq-dash {
+  padding: 24px 28px 60px;
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+.yq-dash-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+.yq-dash-greeting {
+  font-size: var(--yq-font-2xl);
+  font-weight: 600;
+  color: var(--yq-text-1);
+  letter-spacing: -0.2px;
+}
+.yq-dash-date { font-size: var(--yq-font-sm); color: var(--yq-text-3); margin-top: 4px; }
+
+.yq-dash-cols {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 20px;
+  align-items: start;
+}
+.yq-dash-aside { min-width: 0; }
+
+.yq-list-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--yq-radius-md);
+  background: var(--yq-bg-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.yq-list-row:hover .yq-list-icon { background: var(--yq-primary-light); }
+
+.yq-dash-more { font-size: var(--yq-font-sm); color: var(--yq-primary); font-weight: 400; }
+.yq-dash-more:hover { text-decoration: underline; }
+
+/* 动态流 */
+.yq-feed { padding: 4px 0; }
+.yq-feed-item {
+  display: flex;
+  gap: 9px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--yq-border-1);
+}
+.yq-feed-item:last-child { border-bottom: none; }
+.yq-feed-text { font-size: var(--yq-font-sm); color: var(--yq-text-2); line-height: 1.5; }
+.yq-feed-text b { color: var(--yq-text-1); font-weight: 600; }
+.yq-feed-target { color: var(--yq-primary); cursor: pointer; }
+.yq-feed-target:hover { text-decoration: underline; }
+
+/* 知识库卡片 */
+.yq-book-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+}
+.yq-book-card {
+  padding: 14px;
+  cursor: pointer;
+  display: block;
+}
+.yq-book-card-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--yq-radius-md);
+  background: var(--yq-bg-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 19px;
+  margin-bottom: 9px;
+}
+.yq-book-card-avatar-lg { width: 42px; height: 42px; font-size: 21px; margin-bottom: 0; }
+.yq-book-card-name { font-size: var(--yq-font-base); font-weight: 600; color: var(--yq-text-1); }
+.yq-book-card-name-lg { font-size: var(--yq-font-md); }
+.yq-book-card-space { font-size: var(--yq-font-xs); color: var(--yq-text-3); margin-top: 1px; }
+.yq-book-card-meta { font-size: var(--yq-font-xs); color: var(--yq-text-3); margin-top: 3px; }
+.yq-book-card-progress { margin-top: 10px; }
+
+.yq-book-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+.yq-book-card-lg { padding: 16px; }
+.yq-book-card-head { display: flex; align-items: center; gap: 11px; margin-bottom: 10px; }
+.yq-book-card-desc {
+  font-size: var(--yq-font-sm);
+  color: var(--yq-text-3);
+  line-height: 1.6;
+  margin-bottom: 12px;
+  min-height: 42px;
+}
+.yq-book-card-foot {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--yq-font-xs);
+  color: var(--yq-text-4);
+  padding-top: 10px;
+  border-top: 1px solid var(--yq-border-1);
+}
+
+/* 团队 */
+.yq-team-hero {
+  display: flex;
+  gap: 16px;
+  padding: 20px;
+  align-items: flex-start;
+}
+.yq-team-hero-avatar {
+  width: 58px;
+  height: 58px;
+  border-radius: var(--yq-radius-lg);
+  background: var(--yq-primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.yq-team-hero-name { font-size: var(--yq-font-xl); font-weight: 600; color: var(--yq-text-1); }
+.yq-team-hero-desc { font-size: var(--yq-font-sm); color: var(--yq-text-3); margin-top: 4px; line-height: 1.6; }
+.yq-team-hero-stats {
+  display: flex;
+  gap: 28px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--yq-border-1);
+}
+.yq-team-hero-stats > div { display: flex; flex-direction: column; }
+.yq-team-hero-stats b { font-size: var(--yq-font-xl); font-weight: 600; color: var(--yq-text-1); }
+.yq-team-hero-stats span { font-size: var(--yq-font-xs); color: var(--yq-text-3); margin-top: 1px; }
+
+/* 团队主页的「堆叠卡」—— 语雀 /yuque 的 book_stacks 形态 */
+.yq-stack-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 14px;
+}
+.yq-stack {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  gap: 10px;
+}
+.yq-stack-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: inherit;
+  text-decoration: none;
+  min-width: 0;
+}
+.yq-stack-cover {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--yq-radius-lg);
+  background: var(--yq-primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.yq-stack-meta { min-width: 0; }
+.yq-stack-name { font-size: var(--yq-font-base); font-weight: 600; color: var(--yq-text-1); }
+.yq-stack-sub { font-size: var(--yq-font-xs); color: var(--yq-text-3); margin-top: 2px; }
+.yq-stack-desc {
+  margin: 0;
+  font-size: var(--yq-font-sm);
+  color: var(--yq-text-3);
+  line-height: 1.6;
+}
+.yq-stack-desc.yq-ellipsis-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.yq-stack-docs {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--yq-border-1);
+  padding-top: 6px;
+}
+.yq-stack-doc {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 5px 0;
+  color: var(--yq-text-2);
+  text-decoration: none;
+  font-size: var(--yq-font-sm);
+}
+.yq-stack-doc:hover .yq-stack-doc-t { color: var(--yq-primary); }
+.yq-stack-doc-t { min-width: 0; }
+.yq-stack-doc-at {
+  font-size: var(--yq-font-xs);
+  color: var(--yq-text-4);
+  flex-shrink: 0;
+}
+.yq-stack-doc-empty { color: var(--yq-text-4); cursor: default; }
+
+/* 协作 */
+.yq-collab-list { display: flex; flex-direction: column; gap: 10px; }
+.yq-collab-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  position: relative;
+}
+.yq-collab-title { font-size: var(--yq-font-base); color: var(--yq-text-2); }
+.yq-collab-title b { color: var(--yq-text-1); }
+.yq-collab-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--yq-danger);
+  flex-shrink: 0;
+}
+.yq-collab-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+/* 讨论 */
+.yq-discuss-participants { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
+.yq-discuss-participants .yq-avatar { margin-left: -6px; border: 2px solid #fff; }
+.yq-discuss-replies { font-size: var(--yq-font-xs); color: var(--yq-text-3); margin-left: 8px; }
+
+/* 关注页：没有关注任何东西时的空态 */
+.yq-list-empty {
+  padding: 18px 14px;
+  font-size: var(--yq-font-sm);
+  color: var(--yq-text-3);
+}
+
+@media (max-width: 1000px) {
+  .yq-dash-cols { grid-template-columns: 1fr; }
+}
+
+/* ============================================================
+   空间成员
+   ============================================================ */
+
+.yq-space-members {
+  border: 1px solid var(--yq-border-1);
+  border-radius: var(--yq-radius-md);
+  overflow: hidden;
+  background: var(--yq-bg-1);
+}
+
+.yq-space-member {
+  display: grid;
+  grid-template-columns: 1fr 120px 110px 64px;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--yq-border-1);
+}
+.yq-space-member:last-child { border-bottom: none; }
+.yq-space-member:not(.yq-space-member-head):hover { background: var(--yq-bg-2); }
+
+.yq-space-member-head {
+  background: var(--yq-bg-2);
+  border-bottom: none;
+  font-size: var(--yq-font-xs);
+  color: var(--yq-text-3);
+}
+
+.yq-space-member-id { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.yq-space-member-text { display: flex; flex-direction: column; min-width: 0; text-align: left; }
+.yq-space-member-name {
+  font-size: var(--yq-font-sm);
+  color: var(--yq-text-1);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.yq-space-member-me {
+  font-style: normal;
+  font-size: var(--yq-font-xs);
+  color: var(--yq-text-3);
+  background: var(--yq-bg-3);
+  border-radius: var(--yq-radius-sm);
+  padding: 0 5px;
+  line-height: 16px;
+}
+.yq-space-member-account { font-size: var(--yq-font-xs); color: var(--yq-text-3); margin-top: 1px; }
+.yq-space-member-join { font-size: var(--yq-font-xs); color: var(--yq-text-3); }
+.yq-space-member-op { display: flex; justify-content: flex-end; }
+.yq-space-member-hint { font-size: var(--yq-font-xs); color: var(--yq-text-4); }
+
+.yq-space-member-remove {
+  font-size: var(--yq-font-xs);
+  color: var(--yq-text-3);
+  padding: 4px 8px;
+  border-radius: var(--yq-radius-sm);
+  transition: all var(--yq-dur-fast);
+}
+.yq-space-member-remove:hover:not(:disabled) { color: var(--yq-danger); background: var(--yq-bg-3); }
+.yq-space-member-remove:disabled { color: var(--yq-text-4); cursor: not-allowed; opacity: 0.5; }
+
+.yq-space-members-note {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  font-size: var(--yq-font-sm);
+  color: var(--yq-text-3);
+}
+.yq-space-members-note-text {
+  margin-top: 10px;
+  font-size: var(--yq-font-xs);
+  color: var(--yq-text-4);
+  line-height: 1.7;
+}
+.yq-space-members-note-text b { color: var(--yq-text-3); font-weight: 600; }
+
+/* 添加成员弹窗 */
+.yq-space-pick-label { font-size: var(--yq-font-sm); color: var(--yq-text-2); margin-bottom: 8px; }
+.yq-space-pick-search { margin-bottom: 10px; }
+.yq-space-pick-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0 10px;
+  font-size: var(--yq-font-xs);
+  color: var(--yq-text-3);
+}
+.yq-space-pick-count { color: var(--yq-primary); }
+.yq-space-pick-role {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 0 12px;
+  font-size: var(--yq-font-sm);
+  color: var(--yq-text-2);
+}
+.yq-space-pick-list {
+  max-height: 260px;
+  overflow-y: auto;
+  border: 1px solid var(--yq-border-1);
+  border-radius: var(--yq-radius-sm);
+}
+.yq-space-pick-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--yq-border-1);
+}
+.yq-space-pick-item:last-child { border-bottom: none; }
+.yq-space-pick-item:hover { background: var(--yq-bg-2); }
+.yq-space-pick-item.is-active { background: var(--yq-primary-light, var(--yq-bg-2)); }
+.yq-space-pick-none { padding: 20px; text-align: center; font-size: var(--yq-font-sm); color: var(--yq-text-4); }
+
+/* ============================================================
+   工作台「文档」区：三维筛选栏（2026-10-10 对照官方语雀工作台）
+   语雀那一栏是「类型 / 归属 / 创建者」三个下拉 + 选中后可清空。
+   ============================================================ */
+.yq-dash-filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 10px 0 2px;
+}
+.yq-dash-filter-type   { width: 120px; }
+.yq-dash-filter-book   { width: 170px; }
+.yq-dash-filter-author { width: 150px; }
+.yq-dash-filter-clear {
+  border: none;
+  background: none;
+  padding: 0 4px;
+  font-size: var(--yq-font-sm);
+  color: var(--yq-text-3);
+  cursor: pointer;
+  border-radius: var(--yq-radius-sm);
+}
+.yq-dash-filter-clear:hover { color: var(--yq-primary); background: var(--yq-bg-2); }
+
+/* ============================================================
+   「开始」区（语雀工作台顶部入口卡）
+   ============================================================ */
+.yq-dash-start { margin-bottom: 22px; }
+.yq-dash-start .yq-section-title {
+  margin: 0 0 10px;
+  font-size: var(--yq-font-sm);
+  color: var(--yq-text-3);
+  font-weight: 600;
+}
+.yq-dash-start-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+.yq-start-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--yq-border-1);
+  border-radius: var(--yq-radius-lg);
+  background: var(--yq-bg-1);
+  text-align: left;
+  transition: border-color var(--yq-dur-fast), box-shadow var(--yq-dur-fast);
+}
+.yq-start-card:hover { border-color: var(--yq-primary-border); box-shadow: 0 1px 6px rgba(0,0,0,.05); }
+.yq-start-card-icon { font-size: 20px; flex-shrink: 0; }
+.yq-start-card-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.yq-start-card-title { font-size: var(--yq-font-md); font-weight: 600; color: var(--yq-text-1); }
+.yq-start-card-desc { font-size: var(--yq-font-sm); color: var(--yq-text-3); }
+
+/* ---------------- 发起话题对话框（2026-10-12） ----------------
+   照 `Templates.css` 里那套 `.yq-tpl-field` / `.yq-tpl-textarea` 写的 ——
+   项目里已经有一套表单样式，抄它的形状而不是另造一套，
+   免得同一个对话框里两种输入框长得不一样。 */
+.yq-topic-field {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 12px;
+  align-items: start;
+  margin-bottom: 14px;
+}
+.yq-topic-field > label {
+  font-size: var(--yq-font-sm);
+  color: var(--yq-text-2);
+  padding-top: 7px;
+}
+.yq-topic-textarea {
+  width: 100%;
+  min-height: 96px;
+  border: 1px solid var(--yq-border-2);
+  border-radius: var(--yq-radius-md);
+  padding: 10px 12px;
+  outline: none;
+  font-family: var(--yq-font-sans);
+  font-size: var(--yq-font-sm);
+  line-height: 1.7;
+  resize: vertical;
+  color: var(--yq-text-1);
+}
+.yq-topic-textarea:focus {
+  border-color: var(--yq-primary);
+  box-shadow: 0 0 0 2px var(--yq-primary-light);
+}

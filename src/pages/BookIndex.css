@@ -1,0 +1,216 @@
+/* ============================================================
+   空间页 / 知识库主页
+   ============================================================ */
+
+/* ---------------- 空间头 ---------------- */
+.yq-space-hero {
+  display: flex;
+  gap: 18px;
+  padding: 22px 24px;
+  background: var(--yq-bg-1);
+  border: 1px solid var(--yq-border-1);
+  border-radius: var(--yq-radius-lg);
+  margin-bottom: 24px;
+  align-items: flex-start;
+}
+.yq-space-hero-avatar {
+  width: 62px;
+  height: 62px;
+  border-radius: var(--yq-radius-lg);
+  background: var(--yq-primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.yq-space-hero-head { display: flex; align-items: center; gap: 8px; }
+.yq-space-hero-name { font-size: var(--yq-font-2xl); font-weight: 600; color: var(--yq-text-1); }
+.yq-space-hero-desc { font-size: var(--yq-font-sm); color: var(--yq-text-3); margin-top: 5px; line-height: 1.6; }
+.yq-space-hero-stats {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: 14px;
+  font-size: var(--yq-font-xs);
+  color: var(--yq-text-3);
+}
+.yq-space-hero-stats b { color: var(--yq-text-1); font-size: var(--yq-font-md); font-weight: 600; margin-right: 2px; }
+.yq-space-hero-actions { flex-shrink: 0; }
+
+.yq-book-last {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-bottom: 10px;
+  min-height: 54px;
+}
+.yq-book-last-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--yq-font-xs);
+  color: var(--yq-text-3);
+  min-width: 0;
+}
+.yq-book-last-more { font-size: var(--yq-font-xs); color: var(--yq-text-4); padding-left: 18px; }
+
+@media (max-width: 900px) {
+  .yq-space-hero { flex-wrap: wrap; }
+  .yq-space-hero-stats { flex-wrap: wrap; }
+}
+
+/* ---------------- 知识库主页 ---------------- */
+.yq-bookpage {
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+  background: var(--yq-bg-2);
+}
+.yq-bookpage-main {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+}
+
+.yq-bookpage-hero {
+  background: var(--yq-bg-1);
+  border-bottom: 1px solid var(--yq-border-1);
+  padding: 22px 28px 18px;
+}
+.yq-bookpage-hero-row { display: flex; align-items: flex-start; gap: 14px; }
+.yq-bookpage-avatar {
+  width: 54px;
+  height: 54px;
+  border-radius: var(--yq-radius-lg);
+  background: var(--yq-bg-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  flex-shrink: 0;
+}
+.yq-bookpage-title-row { display: flex; align-items: center; gap: 9px; }
+/* 行内改名：双击标题进入编辑，样式贴近标题本身，不跳版 */
+.yq-bookpage-title-input {
+  font-size: var(--yq-font-3xl);
+  font-weight: 700;
+  color: var(--yq-text-1);
+  background: var(--yq-bg-2);
+  border: 1px solid var(--yq-primary);
+  border-radius: var(--yq-radius-sm);
+  padding: 1px 8px;
+  outline: none;
+  min-width: 220px;
+  font-family: inherit;
+}
+.yq-bookpage-title { cursor: text; }
+.yq-bookpage-title {
+  font-size: var(--yq-font-3xl);
+  font-weight: 700;
+  color: var(--yq-text-1);
+  letter-spacing: -0.4px;
+}
+.yq-bookpage-desc {
+  font-size: var(--yq-font-sm);
+  color: var(--yq-text-3);
+  margin-top: 5px;
+  line-height: 1.6;
+}
+.yq-bookpage-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.yq-bookpage-stats {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--yq-border-1);
+  font-size: var(--yq-font-xs);
+  color: var(--yq-text-3);
+}
+.yq-bookpage-stats b { color: var(--yq-text-1); font-size: var(--yq-font-md); font-weight: 600; margin-right: 2px; }
+
+.yq-bookpage-body {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 20px;
+  padding: 22px 28px 60px;
+  align-items: start;
+  max-width: 1180px;
+}
+
+.yq-toc-hint { font-size: var(--yq-font-xs); color: var(--yq-text-4); font-weight: 400; }
+
+.yq-toc {
+  background: var(--yq-bg-1);
+  border: 1px solid var(--yq-border-1);
+  border-radius: var(--yq-radius-lg);
+  padding: 6px;
+}
+.yq-toc-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding-right: 12px;
+  border-radius: var(--yq-radius-md);
+  transition: background var(--yq-dur-fast);
+  position: relative;
+}
+.yq-toc-row:hover { background: var(--yq-bg-2); }
+.yq-toc-row.is-doc { cursor: pointer; }
+.yq-toc-row.is-doc:hover { background: var(--yq-primary-light); }
+.yq-toc-row.is-group { font-weight: 500; }
+
+.yq-toc-icon { font-size: 13px; flex-shrink: 0; width: 18px; text-align: center; }
+.yq-toc-title {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--yq-font-sm);
+  color: var(--yq-text-1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.yq-toc-row.is-group .yq-toc-title { font-weight: 600; }
+.yq-toc-meta { font-size: var(--yq-font-xs); color: var(--yq-text-4); white-space: nowrap; flex-shrink: 0; }
+
+@media (max-width: 1000px) {
+  .yq-bookpage-body { grid-template-columns: 1fr; }
+}
+
+/* ============================================================
+   知识库首页的欢迎区（2026-10-10 实测语雀后补）
+
+   语雀这一页的第一句话是「👋 欢迎来到知识库 / 知识库就像书一样…」，
+   本地早先从统计条直接跳到目录编排 —— 缺了它，
+   打开知识库第一眼看到的只是一堆目录，没有「这是个知识库」的说法。
+
+   复用既有变量，不引新色值。
+   ============================================================ */
+.yq-bookpage-welcome {
+  margin-top: 26px;
+  padding: 22px 24px;
+  border-radius: var(--yq-radius-lg);
+  background: var(--yq-bg-2);
+}
+.yq-bookpage-welcome-title {
+  font-size: var(--yq-font-xl);
+  font-weight: 600;
+  color: var(--yq-text-1);
+  margin-bottom: 8px;
+}
+.yq-bookpage-welcome-desc {
+  margin: 0;
+  font-size: var(--yq-font-sm);
+  color: var(--yq-text-3);
+  line-height: 1.7;
+}
+
+/* 窄屏：欢迎区跟着收窄，不要撑出横向滚动 */
+@media (max-width: 720px) {
+  .yq-bookpage-welcome { padding: 16px; margin-top: 18px; }
+  .yq-bookpage-welcome-title { font-size: var(--yq-font-lg); }
+}

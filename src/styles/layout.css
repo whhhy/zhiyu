@@ -1,0 +1,114 @@
+/* ============================================================
+   App 布局：顶栏 + 左侧导航 + 内容区
+   ============================================================ */
+
+.yq-app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.yq-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.yq-body-full {
+  flex: 1;
+}
+
+.yq-main {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--yq-bg-2);
+}
+
+.yq-main-full {
+  background: var(--yq-bg-1);
+}
+
+/* 内容容器 */
+.yq-page {
+  padding: 24px 28px 60px;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+.yq-page-narrow {
+  max-width: 880px;
+}
+
+/* 页面标题区 */
+.yq-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.yq-page-title {
+  font-size: var(--yq-font-2xl);
+  font-weight: 600;
+  color: var(--yq-text-1);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.yq-page-subtitle {
+  font-size: var(--yq-font-sm);
+  color: var(--yq-text-3);
+  margin-top: 4px;
+}
+
+/* 卡片 */
+.yq-card {
+  background: var(--yq-bg-1);
+  border: 1px solid var(--yq-border-1);
+  border-radius: var(--yq-radius-lg);
+  transition: all var(--yq-dur-fast) var(--yq-ease);
+}
+.yq-card-hover:hover {
+  border-color: var(--yq-primary-border);
+  box-shadow: var(--yq-shadow-sm);
+}
+
+/* 列表行 */
+.yq-list-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--yq-border-1);
+  transition: background var(--yq-dur-fast);
+  cursor: pointer;
+}
+.yq-list-row:last-child { border-bottom: none; }
+.yq-list-row:hover { background: var(--yq-bg-2); }
+.yq-list-row-title {
+  font-size: var(--yq-font-base);
+  color: var(--yq-text-1);
+  font-weight: 500;
+}
+.yq-list-row-meta {
+  font-size: var(--yq-font-xs);
+  color: var(--yq-text-3);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 3px;
+}
+
+/* 区块标题 */
+.yq-section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--yq-font-md);
+  font-weight: 600;
+  color: var(--yq-text-1);
+  margin-bottom: 12px;
+}

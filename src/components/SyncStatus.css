@@ -1,0 +1,117 @@
+/* 同步状态条：离线 / 同步中 / 没能保存 */
+
+.yq-syncstatus {
+  position: relative;
+}
+
+.yq-syncstatus-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--yq-border-1);
+  border-radius: var(--yq-radius-full);
+  background: var(--yq-bg-1);
+  cursor: pointer;
+  font-size: var(--yq-font-xs);
+  color: var(--yq-text-2);
+}
+
+.yq-syncstatus-btn:hover {
+  background: var(--yq-bg-3);
+}
+
+.yq-syncstatus-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--yq-text-4);
+  flex: none;
+}
+
+.yq-syncstatus-warn .yq-syncstatus-dot { background: var(--yq-warning); }
+.yq-syncstatus-error .yq-syncstatus-dot { background: var(--yq-danger); }
+
+.yq-syncstatus-warn {
+  border-color: var(--yq-warning);
+  background: var(--yq-warning-light, #fff8e6);
+}
+
+.yq-syncstatus-error {
+  border-color: var(--yq-danger);
+  background: var(--yq-danger-light, #fdeeee);
+}
+
+.yq-syncstatus-text {
+  white-space: nowrap;
+}
+
+.yq-syncstatus-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 120;
+  width: 360px;
+  max-width: 84vw;
+  padding: 12px;
+  border: 1px solid var(--yq-border-2);
+  border-radius: var(--yq-radius-md);
+  background: var(--yq-bg-1);
+  box-shadow: var(--yq-shadow-md);
+  font-size: var(--yq-font-xs);
+  color: var(--yq-text-2);
+}
+
+.yq-syncstatus-title {
+  font-weight: 600;
+  color: var(--yq-text-1);
+  margin-bottom: 8px;
+}
+
+.yq-syncstatus-panel ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-height: 220px;
+  overflow: auto;
+}
+
+.yq-syncstatus-panel li {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--yq-border-1);
+  line-height: 1.5;
+}
+
+.yq-syncstatus-entity {
+  flex: none;
+  padding: 0 5px;
+  border-radius: var(--yq-radius-xs);
+  background: var(--yq-bg-3);
+  color: var(--yq-text-3);
+  font-size: var(--yq-font-xs);
+}
+
+.yq-syncstatus-id {
+  flex: none;
+  max-width: 96px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--yq-text-4);
+}
+
+.yq-syncstatus-reason {
+  flex: 1;
+  color: var(--yq-danger);
+}
+
+.yq-syncstatus-more,
+.yq-syncstatus-hint {
+  margin-top: 8px;
+  color: var(--yq-text-3);
+  line-height: 1.6;
+}

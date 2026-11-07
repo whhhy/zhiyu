@@ -1,0 +1,628 @@
+/* ============================================================
+   移动端适配 —— 语雀 Web 在窄屏下降级成移动版式
+   ------------------------------------------------------------
+   断点（自上而下叠加）：
+     ≤1400px  收窄侧栏 / 目录 / 大纲，把宽度让给正文
+     ≤1024px  平板：左侧导航收成图标条；顶栏主菜单收进「更多」
+     ≤768px   手机：完整移动版式
+                · 左侧导航 → 汉堡按钮唤起的抽屉
+                · 目录树 → 顶部抽屉，大纲 → 底部抽屉
+                · 菜单栏只留「文档标题 + ···」，其余操作进 ··· 菜单
+                · 工具栏横向滚动 + 按钮缩小，正文 padding 大幅收紧
+                · 卡片网格降单列，表格走横向滚动容器
+                · 弹窗满宽、Drawer 从底部弹出、搜索面板全屏
+     ≤480px   小屏：进一步收紧间距
+
+   原则：只改「窄屏怎么排布」，不砍任何功能 —— 桌面端一行不改。
+   所有颜色仍取自 tokens.css 的 var(--yq-*)，不写死色值。
+   ============================================================ */
+
+/* ============================================================
+   文档页窄屏专属控件（桌面端整条隐藏）
+   —— 抽屉开关条、抽屉遮罩、收进「···」的操作项
+   ============================================================ */
+.yq-doc-mobilebar { display: none; }
+.yq-doc-bar-move { display: none; }
+
+@media (max-width: 768px) {
+  .yq-doc-mobilebar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    border-bottom: 1px solid var(--yq-border-1);
+    background: var(--yq-bg-1);
+    flex-shrink: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .yq-doc-mobilebar::-webkit-scrollbar { height: 0; }
+  .yq-doc-mbtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 26px;
+    padding: 0 9px;
+    border: 1px solid var(--yq-border-1);
+    border-radius: var(--yq-radius-sm);
+    color: var(--yq-text-2);
+    font-size: var(--yq-font-xs);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .yq-doc-mbtn.is-on {
+    background: var(--yq-primary-light);
+    border-color: var(--yq-primary-border);
+    color: var(--yq-primary);
+  }
+  .yq-doc-mbtn-spacer { flex: 1; min-width: 0; }
+}
+
+/* ============================================================
+   ≤1400px：收窄侧栏 / 目录 / 大纲
+   ============================================================ */
+@media (max-width: 1400px) {
+  :root {
+    --yq-sidebar-w: 212px;
+    --yq-tree-w: 232px;
+    --yq-outline-w: 200px;
+  }
+  .yq-page { padding: 22px 22px 56px; }
+  .yq-dash { padding: 22px 22px 56px; }
+  .yq-bookpage-hero { padding: 20px 22px 16px; }
+  .yq-bookpage-body { padding: 20px 22px 56px; }
+}
+
+/* ============================================================
+   ≤1024px：平板 —— 侧栏图标条 + 主菜单进「更多」
+   ============================================================ */
+@media (max-width: 1024px) {
+  /* ---- 左侧导航：常驻列表 → 图标条（文字改用原生 title 提示） ---- */
+  .yq-sidenav {
+    width: 60px;
+    padding: 12px 8px;
+    align-items: center;
+  }
+  .yq-sidenav-text,
+  .yq-sidenav-space-name,
+  .yq-sidenav-space-meta,
+  .yq-sidenav-label,
+  .yq-sidenav-note-title,
+  .yq-sidenav-note-hint { display: none; }
+
+  .yq-sidenav-space {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    margin: 0 auto 14px;
+    justify-content: center;
+  }
+  .yq-sidenav-space-avatar { width: 34px; height: 34px; font-size: 15px; }
+
+  .yq-sidenav-tabs { width: 100%; }
+  .yq-sidenav-section { width: 100%; margin-bottom: 10px; }
+  /* 板块标题隐藏后，用一条分隔线保住「三板块」的分层感 */
+  .yq-sidenav-section + .yq-sidenav-section {
+    border-top: 1px solid var(--yq-border-1);
+    padding-top: 10px;
+  }
+  .yq-sidenav-item {
+    position: relative;
+    justify-content: center;
+    padding: 8px 0;
+    margin-bottom: 4px;
+  }
+  .yq-sidenav-icon { width: auto; font-size: 16px; }
+  /* 计数收成右上角小圆点：60px 的图标条放不下「图标 + 数字」两段 */
+  .yq-sidenav-count {
+    position: absolute;
+    top: 3px;
+    right: 5px;
+    min-width: 0;
+    width: 6px;
+    height: 6px;
+    padding: 0;
+    font-size: 0;
+    background: var(--yq-text-4);
+    border: 1.5px solid var(--yq-bg-1);
+  }
+  .yq-sidenav-item.is-active .yq-sidenav-count { background: var(--yq-primary); }
+
+  .yq-sidenav-foot { width: 100%; padding-top: 10px; }
+  .yq-sidenav-note { justify-content: center; padding: 8px 0; }
+
+  /* ---- 顶栏：主菜单收进「···」后，空间切换器让出位置 ---- */
+  .yq-space-switch { max-width: 150px; }
+  .yq-space-item-meta { display: none; }
+}
+
+/* ============================================================
+   ≤768px：手机 —— 完整移动版式
+   ============================================================ */
+@media (max-width: 768px) {
+  :root {
+    /* 顶栏压矮一点，给正文多让 2px */
+    --yq-header-h: 50px;
+    /* 手机上通用 Drawer 满宽（Modal 仍留 12px 边距，由组件内 min() 决定） */
+    --yq-drawer-w: 100vw;
+  }
+  /* 侧栏 / 目录 / 大纲的宽度在这一档都由下面的 position:fixed 规则直接给死，
+     不再走 --yq-sidebar-w / --yq-tree-w / --yq-outline-w 这三个 token。 */
+
+  /* ==========================================================
+     AppShell：左侧导航 → 抽屉
+     ========================================================== */
+  .yq-body { position: relative; }
+
+  .yq-sidenav {
+    position: fixed;
+    top: var(--yq-header-h);
+    bottom: 0;
+    left: 0;
+    width: min(280px, 82vw);
+    z-index: var(--yq-z-header);
+    align-items: stretch;
+    padding: 12px 10px;
+    transform: translateX(-100%);
+    transition: transform var(--yq-dur-base) var(--yq-ease);
+    box-shadow: var(--yq-shadow-lg);
+    will-change: transform;
+  }
+  .yq-sidenav.is-open { transform: translateX(0); }
+
+  /* 抽屉里把图标条的文字全部放回来（1024px 段隐藏过的，这里逐条还原） */
+  .yq-sidenav-text { display: block; }
+  .yq-sidenav-space-name,
+  .yq-sidenav-space-meta,
+  .yq-sidenav-label,
+  .yq-sidenav-note-title,
+  .yq-sidenav-note-hint { display: block; }
+  .yq-sidenav-space {
+    width: auto;
+    height: auto;
+    padding: 9px 10px;
+    margin: 0 0 14px;
+    justify-content: flex-start;
+  }
+  .yq-sidenav-space-avatar { width: 30px; height: 30px; font-size: 14px; }
+  .yq-sidenav-section + .yq-sidenav-section {
+    border-top: none;
+    padding-top: 0;
+  }
+  .yq-sidenav-section { margin-bottom: 14px; }
+  .yq-sidenav-item {
+    justify-content: flex-start;
+    padding: 7px 10px;
+    margin-bottom: 1px;
+  }
+  .yq-sidenav-icon { width: 18px; font-size: 14px; }
+  .yq-sidenav-count {
+    position: static;
+    min-width: 18px;
+    width: auto;
+    height: auto;
+    padding: 0 6px;
+    font-size: 11px;
+    background: var(--yq-bg-3);
+    border: none;
+  }
+  .yq-sidenav-foot { padding-top: 12px; }
+  .yq-sidenav-note { justify-content: flex-start; padding: 9px 10px; }
+  /* 抽屉底部的显式关闭入口 */
+  .yq-sidenav-close {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    padding: 8px 0;
+    border-top: 1px solid var(--yq-border-1);
+    color: var(--yq-text-3);
+    font-size: var(--yq-font-sm);
+    flex-shrink: 0;
+  }
+  .yq-sidenav-close:hover { color: var(--yq-text-1); }
+
+  /* 抽屉遮罩：点它关闭 */
+  .yq-sidenav-mask {
+    position: fixed;
+    inset: var(--yq-header-h) 0 0 0;
+    background: var(--yq-bg-mask);
+    z-index: 90;
+    border: none;
+    padding: 0;
+    animation: yq-fade-in var(--yq-dur-fast) var(--yq-ease);
+  }
+
+  /* 汉堡按钮：只在「有侧栏的页面 + 窄屏」时出现 */
+  .yq-topbar-burger { display: inline-flex; }
+
+  /* ==========================================================
+     顶栏
+     ========================================================== */
+  .yq-topbar { padding: 0 10px; gap: 10px; }
+  .yq-logo { padding: 5px 6px; }
+  .yq-logo-text { display: none; }
+  .yq-topbar-left { min-width: 0; }
+
+  /* 空间切换器只留头像（名称已由 860px 段隐藏，这里再收掉 caret 与内边距） */
+  .yq-space-switch { padding: 0 5px; max-width: none; }
+  .yq-space-caret { display: none; }
+  .yq-topbar-crumb { max-width: 42vw; min-width: 0; }
+  .yq-topbar-crumb-book {
+    max-width: 100%;
+    min-width: 0;
+    padding: 0 6px;
+    /* 320px 上书名换行会把顶栏撑成两行，超出就省略 */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+  }
+  .yq-topbar-crumb-avatar { display: inline-flex; vertical-align: middle; }
+
+  /* 搜索框 → 纯图标按钮（点了照样唤起同一个全屏搜索面板） */
+  .yq-global-search {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    justify-content: center;
+    border-color: transparent;
+    background: transparent;
+    flex-shrink: 0;
+  }
+  .yq-global-search span,
+  .yq-global-search kbd { display: none; }
+  .yq-new-btn,
+  .yq-bell { width: 28px; height: 28px; }
+  .yq-user { padding: 0 2px; }
+  .yq-topbar-right { gap: 2px; }
+
+  /* ==========================================================
+     全局搜索面板：createPortal 到 body，移动端要铺满
+     ========================================================== */
+  .yq-searchmask {
+    padding: 0;
+    align-items: stretch;
+  }
+  .yq-searchpanel {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+    border-radius: 0;
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  .yq-searchpanel-head { padding: 12px 14px; }
+  .yq-searchpanel-input { font-size: var(--yq-font-base); }
+  .yq-searchpanel-kbd { display: none; }
+  .yq-searchpanel-foot { display: none; }
+  /* 快捷键那几行在触屏上没有意义，但「试试搜索」必须留 ——
+     整块藏掉的话，未输入状态就是一片全屏空白 */
+  .yq-searchpanel-hint > :nth-child(-n + 4) { display: none; }
+  /* !important 是为了压掉 TSX 里写死的 style={{ marginTop: 16 }}（快捷键块没了，16px 的上边距也该收） */
+  .yq-searchpanel-hint-title { margin-top: 4px !important; }
+  .yq-searchpanel-hint-row { padding: 7px 0; }
+
+  /* ==========================================================
+     文档页：目录树 → 顶部抽屉，大纲 → 底部抽屉
+     ========================================================== */
+  .yq-doc-mobilebar { display: flex; }
+
+  .yq-doc-drawermask {
+    position: fixed;
+    inset: 0;
+    display: block;
+    background: var(--yq-bg-mask);
+    /* 必须低于两个抽屉（100），否则遮罩会把抽屉盖住、抽屉点不动 */
+    z-index: 90;
+    border: none;
+    padding: 0;
+    animation: yq-fade-in var(--yq-dur-fast) var(--yq-ease);
+  }
+
+  /* 目录树：从顶部滑入的抽屉 */
+  .yq-tree.is-drawer {
+    position: fixed;
+    top: var(--yq-header-h);
+    left: 0;
+    right: 0;
+    width: auto;
+    height: min(72vh, 560px);
+    z-index: var(--yq-z-header);
+    border-right: none;
+    border-bottom: 1px solid var(--yq-border-1);
+    box-shadow: var(--yq-shadow-lg);
+    /* 收起时要整块退到视口上沿之外：只 translateY(-100%) 会把最后 header-h
+       像素留在顶栏底下，树的「新建文档」那行会露出来 */
+    transform: translateY(calc(-100% - var(--yq-header-h) - 4px));
+    transition: transform var(--yq-dur-base) var(--yq-ease);
+    will-change: transform;
+  }
+  .yq-tree.is-drawer.is-open { transform: translateY(0); }
+  /* 抽屉里没有「拖拽调宽」这件事，隐藏把手省一条竖线 */
+  .yq-tree.is-drawer .yq-tree-resizer { display: none; }
+  .yq-tree.is-drawer .yq-tree-head { padding-top: 12px; padding-bottom: 12px; }
+  /* 抽屉里误点「收起目录」也不该缩成 46px 的图标条 */
+  .yq-tree.is-drawer.yq-tree-collapsed { width: auto; }
+
+  /* 大纲：从底部滑入的抽屉 */
+  .yq-outline.is-drawer {
+    position: fixed;
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: auto;
+    height: min(64vh, 520px);
+    z-index: var(--yq-z-header);
+    border-left: none;
+    border-top: 1px solid var(--yq-border-1);
+    border-radius: var(--yq-radius-lg) var(--yq-radius-lg) 0 0;
+    box-shadow: var(--yq-shadow-lg);
+    transform: translateY(100%);
+    transition: transform var(--yq-dur-base) var(--yq-ease);
+    will-change: transform;
+  }
+  .yq-outline.is-drawer.is-open { transform: translateY(0); }
+  /* 抽屉模式下 mini 把手 / 悬浮浮层都没有意义，入口统一走「大纲」按钮 */
+  .yq-outline-mini-wrap,
+  .yq-outline-float { display: none; }
+
+  /* ---- 菜单栏：只留「文档标题 + ···」，其余操作进 ··· 菜单 ---- */
+  .yq-doc-bar { padding: 0 8px 0 10px; gap: 8px; }
+  .yq-doc-new,
+  .yq-doc-bar-type,
+  .yq-doc-bar-lock,
+  .yq-doc-members,
+  .yq-doc-act,
+  .yq-doc-like,
+  .yq-doc-comment-btn,
+  .yq-doc-share { display: none; }
+  .yq-doc-act.yq-doc-more { display: inline-flex; min-width: 32px; }
+  .yq-doc-bar-title { font-size: var(--yq-font-base); }
+  /* 上面这排按钮收走后，它们的入口在这里 —— 必须显式打开，
+     否则「···」里就只剩文档级操作，窄屏等于砍功能 */
+  .yq-doc-bar-move { display: block; }
+
+  /* 协作条在窄屏没有横向空间，入口已由「···」菜单里的协作面板兜住 */
+  .yq-doc-collabbar { display: none; }
+
+  /* 评论 / 划词侧栏：固定 340px 会挤掉正文，改成覆盖式抽屉 */
+  .yq-comment,
+  .yq-selpanel {
+    position: fixed;
+    top: var(--yq-header-h);
+    right: 0;
+    bottom: 0;
+    width: min(340px, 88vw);
+    z-index: var(--yq-z-header);
+    box-shadow: var(--yq-shadow-lg);
+  }
+  .yq-selpop { width: min(330px, calc(100vw - 24px)); }
+
+  /* ---- 正文：padding 从 72px 收到 16px ---- */
+  .yq-doc-content {
+    padding: 18px 16px 64px;
+    max-width: none;
+  }
+  .yq-docpage.is-wide .yq-doc-content { padding-left: 16px; padding-right: 16px; }
+  .yq-doc-title { font-size: 26px; }
+  .yq-doc-title-input { font-size: 26px; }
+  .yq-doc-type-icon { font-size: 21px; }
+  .yq-doc-corner { right: 14px; bottom: 14px; }
+  .yq-doc-nav { flex-direction: column; gap: 8px; margin-top: 32px; padding-top: 18px; }
+  .yq-doc-nav-item.is-next { text-align: left; align-items: flex-start; }
+
+  /* ---- 编辑器：块左侧操作条不能留在屏外 ---- */
+  .yq-block-gutter {
+    left: 0;
+    top: 0;
+    width: auto;
+    justify-content: flex-start;
+    padding: 0 2px 0 0;
+    background: var(--yq-bg-1);
+    border-radius: var(--yq-radius-sm);
+    box-shadow: var(--yq-shadow-xs);
+    z-index: 3;
+  }
+  /* 触屏没有 hover：不再在激活块上常驻，避免压住正文 */
+  .yq-block.is-active .yq-block-gutter { opacity: 0; }
+  .yq-block-type-panel { left: 0; }
+  .yq-editor-blocks { padding: 8px 0 72px; }
+
+  /* 斜杠 / @ 面板不能比屏幕还宽 */
+  .yq-slash,
+  .yq-slash-cards,
+  .yq-mention,
+  .yq-selbar { max-width: calc(100vw - 24px); }
+
+  /* ---- 工具栏：一整行压成横向可滚动的紧凑条 ---- */
+  .yq-toolbar { padding: 0 8px; }
+  .yq-tb-btn { width: 26px; height: 26px; font-size: var(--yq-font-xs); }
+  .yq-tb-blocktype { min-width: 60px; height: 26px; padding: 0 6px; }
+  .yq-tb-select { height: 26px; padding: 0 6px; }
+  .yq-tb-insert { height: 26px; padding: 0 8px 0 5px; }
+  .yq-tb-insert-plus { width: 13px; height: 13px; font-size: 10px; }
+  .yq-tb-divider { margin: 0 3px; height: 14px; }
+  /* 保存状态吸在右端，横向滚动时也一直看得见 */
+  .yq-tb-save {
+    position: sticky;
+    right: 0;
+    padding-left: 12px;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0), var(--yq-bg-1) 10px);
+  }
+  .yq-shortcuts { grid-template-columns: 1fr; gap: 14px; }
+
+  /* ==========================================================
+     列表类页面：多列网格 → 单列
+     ========================================================== */
+  .yq-page,
+  .yq-dash { padding: 16px 14px 48px; }
+  .yq-page-header { flex-wrap: wrap; gap: 10px; }
+  .yq-page-title { font-size: var(--yq-font-xl); }
+  .yq-dash-greeting { font-size: var(--yq-font-xl); }
+  .yq-dash-header { flex-wrap: wrap; gap: 10px; }
+  .yq-dash-cols,
+  .yq-bookpage-body { grid-template-columns: 1fr; }
+  /* 多列网格 → 单列 */
+  .yq-book-cards,
+  .yq-book-grid,
+  .yq-help-grid,
+  .yq-discover-grid,
+  .yq-settings { grid-template-columns: 1fr; }
+  /* 横向排列的头像组/统计条（本来就是 flex，grid-template-columns 对它们无效） */
+  .yq-team-hero-stats,
+  .yq-space-hero-stats,
+  .yq-bookpage-stats,
+  .yq-settings-avatar-row { flex-wrap: wrap; gap: 12px; }
+  /* 表单里的「标签 + 字段」两列也压成单列 */
+  .yq-settings-field,
+  .yq-tpl-field { grid-template-columns: 1fr; gap: 4px; }
+  .yq-tpl-icons { grid-template-columns: repeat(6, 1fr); }
+
+  /* ---- 表格类：加横向滚动容器，绝不挤压列宽 ---- */
+  .yq-sheet-body { max-height: 58vh; -webkit-overflow-scrolling: touch; }
+  .yq-sheet-grid { min-width: 520px; }
+  .yq-dt-table { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .yq-dt-table table { min-width: 520px; }
+  .yq-dt-kanban { grid-template-columns: 1fr; min-height: 0; }
+  /* 知识库设置中心：成员表在窄屏塞不下四列，整体横向滚动而不是压扁列宽 */
+  .yq-bset-nav { flex-wrap: nowrap; }
+  .yq-bset-nav-item { white-space: nowrap; flex-shrink: 0; }
+  .yq-bset-members { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .yq-bset-member { min-width: 420px; }
+  .yq-bset-body,
+  .yq-bset-main,
+  .yq-bset-perm-list { min-width: 0; }
+  .yq-bset-perm-grid,
+  .yq-bset-stats-grid { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); }
+
+  /* ---- 知识库主页 hero / 空间头：窄屏换行 ---- */
+  .yq-bookpage-hero { padding: 16px 14px 14px; }
+  .yq-bookpage-hero-row { flex-wrap: wrap; }
+  .yq-bookpage-title { font-size: var(--yq-font-2xl); }
+  .yq-bookpage-avatar { width: 44px; height: 44px; font-size: 21px; }
+  .yq-bookpage-actions { width: 100%; }
+  .yq-bookpage-stats { flex-wrap: wrap; gap: 12px; }
+  .yq-space-hero { padding: 16px; gap: 12px; }
+  .yq-space-hero-avatar { width: 48px; height: 48px; font-size: 20px; }
+  .yq-space-hero-name { font-size: var(--yq-font-xl); }
+  .yq-space-hero-actions { width: 100%; }
+  .yq-toc-row { height: 34px; }
+
+  /* ==========================================================
+     弹窗 / 浮层
+     ========================================================== */
+  .yq-modal-mask { padding: 12px; align-items: center; }
+  .yq-modal-header { padding: 13px 16px; }
+  .yq-modal-body { padding: 16px; }
+  .yq-modal-footer { padding: 10px 16px; }
+
+  /* Drawer 在手机上从底部弹出 */
+  .yq-drawer-mask { display: flex; align-items: flex-end; }
+  .yq-drawer {
+    top: auto;
+    bottom: 0;
+    height: min(80vh, 100%);
+    border-radius: var(--yq-radius-lg) var(--yq-radius-lg) 0 0;
+    animation-name: yq-drawer-up;
+  }
+  .yq-drawer-right,
+  .yq-drawer-left { left: 0; right: 0; }
+  @keyframes yq-drawer-up {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+  .yq-drawer-header { padding: 12px 16px; }
+  .yq-drawer-header::before {
+    content: '';
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 32px;
+    height: 3px;
+    border-radius: var(--yq-radius-full);
+    background: var(--yq-border-3);
+  }
+  .yq-drawer-header { position: relative; padding-top: 18px; }
+
+  /* Popover 是 fixed 定位 + JS 算位，这里只兜一个最大宽度 */
+  .yq-popover { max-width: calc(100vw - 16px); }
+  .yq-new-doc-types { grid-template-columns: repeat(2, 1fr); }
+  .yq-toast { max-width: calc(100vw - 24px); }
+
+  /* ==========================================================
+     画板：点阵 + 卡片尺寸适配（位置由 BoardView 在窄屏重排）
+     ========================================================== */
+  .yq-board-bar {
+    flex-wrap: wrap;
+    row-gap: 6px;
+    padding: 8px 10px;
+  }
+  .yq-board-title { width: 100%; }
+  .yq-board-canvas {
+    min-width: 0;
+    height: 62vh;
+    background-size: 14px 14px;
+  }
+  .yq-board-lines { min-width: 0; }
+  .yq-board-card {
+    font-size: var(--yq-font-xs);
+    padding: 6px;
+  }
+}
+
+/* ============================================================
+   ≤480px：小屏 —— 收紧间距
+   ============================================================ */
+@media (max-width: 480px) {
+  :root {
+    --yq-header-h: 48px;
+  }
+  .yq-topbar { padding: 0 8px; gap: 8px; }
+  .yq-page,
+  .yq-dash { padding: 14px 12px 40px; }
+  .yq-bookpage-hero { padding: 14px 12px 12px; }
+  .yq-bookpage-body { padding: 14px 12px 40px; }
+  .yq-space-hero { padding: 14px; }
+
+  .yq-card { border-radius: var(--yq-radius-md); }
+  .yq-book-card { padding: 12px; }
+
+  /* 正文再收一档 */
+  .yq-doc-content { padding: 16px 12px 56px; }
+  .yq-docpage.is-wide .yq-doc-content { padding-left: 12px; padding-right: 12px; }
+  .yq-doc-title { font-size: 22px; }
+  .yq-doc-title-input { font-size: 22px; }
+  .yq-doc-bar { padding: 0 6px 0 8px; }
+  .yq-doc-mobilebar { padding: 4px 8px; }
+
+  .yq-sidenav { width: min(268px, 86vw); }
+  .yq-searchpanel-head { padding: 10px 12px; }
+  .yq-searchrow { padding: 10px 8px; }
+  .yq-share-link { flex-wrap: wrap; }
+  .yq-share-link button { width: 100%; }
+  .yq-modal-mask { padding: 8px; }
+  .yq-tb-blocktype { min-width: 52px; }
+  .yq-tb-select { font-size: var(--yq-font-xs); }
+  .yq-tb-save { display: none; }
+}
+
+/* ============================================================
+   兜底：任何单点都不该把整页撑出横向滚动条
+   （真语雀的窄屏版式也是这么兜的）
+   ============================================================ */
+@media (max-width: 768px) {
+  html,
+  body {
+    overflow-x: hidden;
+  }
+  /* 长 URL / 连续英文 / 代码块：允许块内换行或块内滚动，而不是撑宽整页 */
+  .yq-doc-content { overflow-wrap: anywhere; }
+  .yq-code-body { white-space: pre-wrap; }
+  .yq-list-row-title,
+  .yq-book-card-name,
+  .yq-book-card-desc,
+  .yq-collab-title,
+  .yq-toc-title { overflow-wrap: anywhere; }
+}

@@ -1,0 +1,174 @@
+/* ============================================================
+   协作：并发编辑合并提示
+   —— 挂在 .yq-doc-collabbar 里（协作条），有冲突时整条变高
+   ============================================================ */
+
+/* 有合并记录时协作条不再是一行：让提示有地方展开 */
+.yq-doc-collabbar.has-conflict {
+  height: auto;
+  min-height: 34px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  padding: 5px 12px;
+  row-gap: 6px;
+}
+
+.yq-collab-conflict {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-right: auto;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.yq-collab-conflict-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 8px 0 7px;
+  border-radius: var(--yq-radius-sm);
+  background: var(--yq-warning-light);
+  color: var(--yq-text-2);
+  font-size: var(--yq-font-xs);
+  white-space: nowrap;
+  transition: background var(--yq-dur-fast);
+}
+
+.yq-collab-conflict-head:hover { background: var(--yq-bg-3); }
+
+.yq-collab-conflict-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--yq-radius-full);
+  background: var(--yq-warning);
+  flex-shrink: 0;
+}
+
+.yq-collab-conflict-title { font-weight: 500; }
+.yq-collab-conflict-caret { font-size: 9px; color: var(--yq-text-3); }
+
+.yq-collab-conflict-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 8px;
+  border: 1px solid var(--yq-border-1);
+  border-radius: var(--yq-radius-md);
+  background: var(--yq-bg-1);
+  box-shadow: var(--yq-shadow-xs);
+  max-height: 240px;
+  overflow: auto;
+}
+
+.yq-collab-conflict-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 3px 0;
+  min-width: 0;
+}
+
+.yq-collab-conflict-item + .yq-collab-conflict-item {
+  border-top: 1px dashed var(--yq-border-1);
+}
+
+.yq-collab-conflict-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.yq-collab-conflict-tag {
+  flex-shrink: 0;
+  padding: 0 5px;
+  height: 16px;
+  line-height: 16px;
+  border-radius: var(--yq-radius-xs);
+  font-size: var(--yq-font-xs);
+  color: var(--yq-text-inverse);
+  background: var(--yq-text-4);
+}
+
+.yq-collab-conflict-tag.is-block { background: var(--yq-primary); }
+.yq-collab-conflict-tag.is-card { background: var(--yq-success); }
+.yq-collab-conflict-tag.is-sheet { background: var(--yq-warning); }
+
+.yq-collab-conflict-where {
+  font-size: var(--yq-font-xs);
+  color: var(--yq-text-1);
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.yq-collab-conflict-meta {
+  font-size: var(--yq-font-xs);
+  color: var(--yq-text-3);
+  white-space: nowrap;
+}
+
+.yq-collab-conflict-acts { flex-shrink: 0; }
+
+.yq-collab-conflict-act,
+.yq-collab-conflict-ignore {
+  height: 22px;
+  padding: 0 8px;
+  border-radius: var(--yq-radius-sm);
+  font-size: var(--yq-font-xs);
+  color: var(--yq-text-2);
+  background: var(--yq-bg-2);
+  white-space: nowrap;
+  transition: background var(--yq-dur-fast);
+}
+
+.yq-collab-conflict-act:hover { background: var(--yq-primary-light); color: var(--yq-primary); }
+.yq-collab-conflict-ignore:hover { background: var(--yq-bg-4); color: var(--yq-text-1); }
+
+.yq-collab-conflict-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 4px;
+  border-top: 1px solid var(--yq-border-1);
+}
+
+.yq-collab-conflict-hint {
+  font-size: var(--yq-font-xs);
+  color: var(--yq-text-4);
+}
+
+/* ============================================================
+   被合并的位置：高亮 2 秒后淡出
+   —— 用 animation 而不是 transition：class 由 JS 摘掉，
+      淡出必须由动画自己走完，否则会停在半亮的状态。
+   ============================================================ */
+.yq-collab-flash {
+  animation: yq-collab-flash 2s var(--yq-ease) both;
+  border-radius: var(--yq-radius-sm);
+}
+
+@keyframes yq-collab-flash {
+  0% {
+    background-color: rgba(var(--yq-primary-rgb), 0.22);
+    box-shadow: 0 0 0 3px rgba(var(--yq-primary-rgb), 0.16);
+  }
+  70% {
+    background-color: rgba(var(--yq-primary-rgb), 0.12);
+    box-shadow: 0 0 0 1px rgba(var(--yq-primary-rgb), 0.08);
+  }
+  100% {
+    background-color: transparent;
+    box-shadow: 0 0 0 0 rgba(var(--yq-primary-rgb), 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .yq-collab-flash { animation-duration: 0.4s; }
+}

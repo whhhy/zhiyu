@@ -1,0 +1,177 @@
+/* ============================================================
+   启动闸门 / 登录页 样式
+   全部走既有 token，不写死色值（与全站约定一致）
+   ============================================================ */
+
+.yq-boot {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: var(--yq-bg-2);
+}
+
+.yq-boot-logo {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: var(--yq-primary);
+}
+
+.yq-boot-text {
+  font-size: 13px;
+  color: var(--yq-text-3);
+}
+
+/* ---------------- 服务连不上 ----------------
+   这一页**必须挡住整个应用**：放行的话用户看到的是本地那份数据，
+   而他以为自己在编辑真实知识库，界面上没有任何东西能让他察觉。 */
+
+.yq-offline-why {
+  max-width: 460px;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.9;
+  color: var(--yq-text-3);
+}
+
+.yq-offline-why b {
+  color: var(--yq-text-1);
+}
+
+.yq-boot-retry {
+  margin-top: 4px;
+  padding: 8px 26px;
+  font-size: 13px;
+  color: var(--yq-primary);
+  background: var(--yq-bg-1);
+  border: 1px solid var(--yq-primary);
+  border-radius: var(--yq-radius-sm);
+  transition: all var(--yq-dur-fast);
+}
+
+.yq-boot-retry:hover:not(:disabled) {
+  color: #fff;
+  background: var(--yq-primary);
+}
+
+.yq-boot-retry:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ---------------- 登录 ---------------- */
+
+.yq-login {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: var(--yq-bg-2);
+}
+
+.yq-login-card {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 32px 28px;
+  border-radius: 12px;
+  background: var(--yq-bg-1);
+  border: 1px solid var(--yq-border-1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+.yq-login-logo {
+  text-align: center;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: var(--yq-primary);
+}
+
+.yq-login-sub {
+  text-align: center;
+  font-size: 13px;
+  color: var(--yq-text-3);
+  margin-top: -6px;
+  margin-bottom: 6px;
+}
+
+.yq-login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.yq-login-field > span {
+  font-size: 12px;
+  color: var(--yq-text-3);
+}
+
+.yq-login-field input {
+  height: 38px;
+  padding: 0 10px;
+  border-radius: 6px;
+  border: 1px solid var(--yq-border-1);
+  background: var(--yq-bg-2);
+  color: var(--yq-text-1);
+  font-size: 14px;
+  outline: none;
+}
+
+.yq-login-field input:focus {
+  border-color: var(--yq-primary);
+}
+
+.yq-login-err {
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--yq-danger);
+  background: rgba(227, 77, 89, 0.08);
+}
+
+.yq-login-submit {
+  height: 38px;
+  border: none;
+  border-radius: 6px;
+  background: var(--yq-primary);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.yq-login-submit:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.yq-login-switch {
+  border: none;
+  background: none;
+  color: var(--yq-text-3);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.yq-login-switch:hover {
+  color: var(--yq-primary);
+}
+
+.yq-login-hint {
+  margin-top: 4px;
+  padding-top: 12px;
+  border-top: 1px solid var(--yq-border-1);
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--yq-text-3);
+}

@@ -1,0 +1,218 @@
+/* ============================================================
+   实时协作光标（远端协作者 overlay）
+   ------------------------------------------------------------
+   纯覆盖层：绝不修改 contentEditable 块的 DOM，只在正文滚动区上
+   叠一层绝对定位元素。
+   颜色只有一个来源 —— 内联注入的 --yq-collab-color（成员标识色，
+   来自 CollabCursor.color）；其余全部走 tokens.css。
+   ============================================================ */
+
+/* overlay 要以滚动区为定位基准。
+   正文里所有绝对定位元素（块左侧操作条 / 块类型面板 / 卡片工具条 /
+   画板卡片 / 表格进度条）都已有各自的 position:relative 祖先，
+   因此这里只是给 .yq-doc-scroll 补一个定位上下文，布局零变化。 */
+.yq-doc-scroll {
+  position: relative;
+}
+
+/* ---------------- overlay 宿主 ---------------- */
+
+.yq-collab-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 0;
+  /* 压在正文之上、斜杠/评论浮层之下 */
+  z-index: 6;
+  pointer-events: none;
+  overflow: visible;
+}
+
+/* ---------------- 单个远端光标 ---------------- */
+
+/* 零尺寸锚点：定位在光标竖线的左上角，选区块 / 竖线 / 名字标签
+   都相对它摆放。空闲淡出整体作用在这一层，避免和竖线的闪烁动画
+   抢 opacity。 */
+.yq-collab-cursor {
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  transition: opacity var(--yq-dur-base) var(--yq-ease);
+}
+.yq-collab-cursor.is-idle { opacity: 0.3; }
+
+/* 选区高亮：用该成员标识色的低透明度版本，跨行时按行渲染多个块 */
+.yq-collab-sel {
+  position: absolute;
+  background: var(--yq-collab-color);
+  opacity: 0.22;
+  border-radius: var(--yq-radius-xs);
+}
+
+/* 光标竖线：宽 2px，高由 JS 按所在行的行高注入（标题/正文/代码块
+   行高各不相同，写死 1.8em 会在 H1 上明显偏矮） */
+.yq-collab-caret {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2px;
+  border-radius: 1px;
+  background: var(--yq-collab-color);
+  animation: yq-collab-blink 1.6s var(--yq-ease) infinite;
+}
+@keyframes yq-collab-blink {
+  0%, 42% { opacity: 1; }
+  58%, 100% { opacity: 0.25; }
+}
+
+/* 名字标签：贴在竖线上方；首行放不下时由 JS 切到下方 */
+.yq-collab-label {
+  position: absolute;
+  bottom: 100%;
+  left: -1px;
+  transform: translateY(-1px);
+  padding: 1px 5px;
+  border-radius: var(--yq-radius-xs);
+  background: var(--yq-collab-color);
+  color: var(--yq-text-inverse);
+  font-size: 11px;
+  line-height: 1.6;
+  white-space: nowrap;
+  user-select: none;
+  box-shadow: var(--yq-shadow-xs);
+  animation: yq-fade-in var(--yq-dur-fast) var(--yq-ease);
+}
+/**
+ * 标签避让：--yq-label-shift 由 overlay 宿主统一算出（两个协作者的光标
+ * 靠太近时，标签会直接叠成一团）。这里只负责把它体现到位置上。
+ * 用 bottom/top 的 calc 而不是 transform —— 光标高度是动态的，
+ * 用偏移量比改 transform 少一层对未定义变量的依赖。
+ */
+.yq-collab-label {
+  bottom: calc(100% + var(--yq-label-shift, 0px) + 2px);
+}
+.yq-collab-cursor.is-below .yq-collab-label {
+  bottom: auto;
+  top: calc(100% + var(--yq-label-shift, 0px) + 2px);
+}
+
+/* ============================================================
+   协作条 —— 菜单栏与工具栏之间的一行，右上角入口
+   语雀把「谁在线」放在编辑器顶部；这里单独一行避免挤爆菜单栏
+   ============================================================ */
+.yq-doc-collabbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  height: 34px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--yq-border-1);
+  background: var(--yq-bg-1);
+  flex-shrink: 0;
+}
+
+.yq-doc-collabbtn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 24px;
+  padding: 0 7px 0 5px;
+  border-radius: var(--yq-radius-sm);
+  color: var(--yq-text-2);
+  transition: background var(--yq-dur-fast);
+}
+.yq-doc-collabbtn:hover,
+.yq-doc-collabbtn.is-open { background: var(--yq-bg-3); }
+.yq-doc-collab-count {
+  font-size: var(--yq-font-xs);
+  white-space: nowrap;
+}
+.yq-doc-collab-caret { font-size: 9px; color: var(--yq-text-4); }
+
+.yq-doc-collab-switch {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--yq-font-xs);
+  color: var(--yq-text-3);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* ---------------- 参与者列表（Popover 面板内容） ---------------- */
+
+.yq-collab-panel { padding: 4px 2px; }
+
+.yq-collab-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 7px 8px;
+  border-radius: var(--yq-radius-sm);
+}
+.yq-collab-item:hover { background: var(--yq-bg-3); }
+
+.yq-collab-item-main { flex: 1; min-width: 0; }
+.yq-collab-item-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--yq-font-sm);
+  color: var(--yq-text-1);
+  font-weight: 500;
+}
+.yq-collab-item-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--yq-text-4);
+}
+.yq-collab-item-doc {
+  font-size: 11px;
+  color: var(--yq-text-3);
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.yq-collab-item-doc b { color: var(--yq-text-2); font-weight: 500; }
+.yq-collab-item-quote {
+  font-size: 11px;
+  color: var(--yq-text-4);
+  margin-top: 1px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 成员标识色的小圆点：颜色来自该成员的光标色 */
+.yq-collab-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--yq-collab-color, var(--yq-text-4));
+}
+.yq-collab-dot.is-idle { background: var(--yq-text-4); }
+
+.yq-collab-me {
+  font-size: 10px;
+  color: var(--yq-text-3);
+  border: 1px solid var(--yq-border-1);
+  border-radius: var(--yq-radius-xs);
+  padding: 0 3px;
+  line-height: 15px;
+}
+
+.yq-collab-empty {
+  padding: 14px 10px;
+  text-align: center;
+  font-size: var(--yq-font-xs);
+  color: var(--yq-text-4);
+}

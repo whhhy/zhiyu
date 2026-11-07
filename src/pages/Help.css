@@ -1,0 +1,436 @@
+/* ============================================================
+   发现 / 帮助 / 设置
+   ============================================================ */
+
+.yq-discover-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+.yq-discover-card {
+  padding: 16px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+}
+.yq-discover-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.yq-discover-card-type { font-size: 20px; }
+.yq-discover-card-title {
+  font-size: var(--yq-font-md);
+  font-weight: 600;
+  color: var(--yq-text-1);
+  line-height: 1.45;
+  min-height: 44px;
+}
+.yq-discover-card-desc {
+  font-size: var(--yq-font-sm);
+  color: var(--yq-text-3);
+  line-height: 1.65;
+  margin-top: 6px;
+  flex: 1;
+}
+.yq-discover-card-foot {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--yq-border-1);
+  font-size: var(--yq-font-xs);
+  color: var(--yq-text-4);
+  min-width: 0;
+}
+
+.yq-dash-narrow { max-width: 940px; }
+
+/* ---------------- 帮助 ---------------- */
+.yq-help-hero {
+  text-align: center;
+  padding: 32px 0 28px;
+}
+.yq-help-title { font-size: var(--yq-font-3xl); font-weight: 700; color: var(--yq-text-1); }
+.yq-help-sub { font-size: var(--yq-font-base); color: var(--yq-text-3); margin-top: 6px; }
+.yq-help-search {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  max-width: 480px;
+  margin: 20px auto 0;
+  height: 42px;
+  padding: 0 16px;
+  background: var(--yq-bg-1);
+  border: 1px solid var(--yq-border-2);
+  border-radius: var(--yq-radius-lg);
+  box-shadow: var(--yq-shadow-sm);
+}
+.yq-help-search:focus-within { border-color: var(--yq-primary); }
+.yq-help-search input { flex: 1; border: none; outline: none; background: transparent; font-size: var(--yq-font-base); }
+
+.yq-help-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.yq-help-card { padding: 6px; }
+.yq-help-card-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: var(--yq-font-sm);
+  font-weight: 600;
+  color: var(--yq-text-1);
+  padding: 10px 12px 8px;
+}
+.yq-help-item { padding: 9px 12px; border-radius: var(--yq-radius-md); cursor: pointer; transition: background var(--yq-dur-fast); }
+.yq-help-item:hover { background: var(--yq-bg-2); }
+.yq-help-item-t { font-size: var(--yq-font-sm); color: var(--yq-text-1); }
+.yq-help-item:hover .yq-help-item-t { color: var(--yq-primary); }
+.yq-help-item-d { font-size: var(--yq-font-xs); color: var(--yq-text-3); margin-top: 2px; }
+
+.yq-help-shortcuts { padding: 16px 20px; }
+.yq-help-kbd-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 8px 24px;
+  margin-top: 12px;
+}
+.yq-help-kbd-row { display: flex; align-items: center; gap: 10px; font-size: var(--yq-font-sm); color: var(--yq-text-2); }
+.yq-help-kbd-row kbd {
+  font-family: var(--yq-font-mono);
+  font-size: 11px;
+  background: var(--yq-bg-2);
+  border: 1px solid var(--yq-border-1);
+  border-radius: var(--yq-radius-sm);
+  padding: 2px 7px;
+  color: var(--yq-text-3);
+  min-width: 54px;
+  text-align: center;
+}
+
+.yq-help-contact { margin-top: 16px; }
+.yq-help-contact-card { padding: 24px; text-align: center; }
+.yq-help-contact-card h3 { font-size: var(--yq-font-lg); font-weight: 600; margin-bottom: 6px; }
+.yq-help-contact-card p { font-size: var(--yq-font-sm); color: var(--yq-text-3); margin-bottom: 16px; }
+.yq-help-contact-card .yq-flex { justify-content: center; }
+
+/* ---------------- 设置 ---------------- */
+.yq-settings { display: grid; grid-template-columns: 168px 1fr; gap: 20px; align-items: start; }
+.yq-settings-nav { display: flex; flex-direction: column; gap: 2px; }
+.yq-settings-nav-item {
+  text-align: left;
+  padding: 8px 12px;
+  border-radius: var(--yq-radius-md);
+  font-size: var(--yq-font-sm);
+  color: var(--yq-text-2);
+  transition: all var(--yq-dur-fast);
+}
+.yq-settings-nav-item:hover { background: var(--yq-bg-3); }
+.yq-settings-nav-item.is-active { background: var(--yq-primary-light); color: var(--yq-primary); font-weight: 500; }
+
+.yq-settings-card { padding: 20px 22px; }
+.yq-settings-title { font-size: var(--yq-font-md); font-weight: 600; color: var(--yq-text-1); margin-bottom: 16px; }
+.yq-settings-desc { font-size: var(--yq-font-sm); color: var(--yq-text-3); margin-bottom: 12px; }
+.yq-settings-hint { font-size: var(--yq-font-xs); color: var(--yq-text-4); margin-top: 6px; }
+.yq-settings-avatar-row { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+.yq-settings-field { display: grid; grid-template-columns: 100px 1fr; gap: 12px; align-items: start; margin-bottom: 14px; }
+.yq-settings-field label { font-size: var(--yq-font-sm); color: var(--yq-text-2); padding-top: 7px; }
+.yq-settings-textarea {
+  width: 100%;
+  min-height: 72px;
+  border: 1px solid var(--yq-border-2);
+  border-radius: var(--yq-radius-md);
+  padding: 8px 11px;
+  outline: none;
+  font-size: var(--yq-font-sm);
+  resize: vertical;
+  line-height: 1.6;
+}
+.yq-settings-textarea:focus { border-color: var(--yq-primary); }
+.yq-settings-actions { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--yq-border-1); }
+.yq-settings-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--yq-border-1);
+}
+.yq-settings-row:last-child { border-bottom: none; }
+.yq-settings-row-label { font-size: var(--yq-font-sm); color: var(--yq-text-1); }
+.yq-settings-row-desc { font-size: var(--yq-font-xs); color: var(--yq-text-3); margin-top: 2px; }
+
+@media (max-width: 860px) {
+  .yq-settings { grid-template-columns: 1fr; }
+  .yq-settings-nav { flex-direction: row; overflow-x: auto; }
+}
+
+/* ---------------- 话题详情 ---------------- */
+.yq-topic-header { margin-bottom: 18px; }
+.yq-topic-back {
+  font-size: var(--yq-font-sm);
+  color: var(--yq-text-3);
+  margin-bottom: 10px;
+}
+.yq-topic-back:hover { color: var(--yq-primary); }
+.yq-topic-title {
+  font-size: var(--yq-font-2xl);
+  font-weight: 700;
+  color: var(--yq-text-1);
+  line-height: 1.4;
+}
+.yq-topic-meta {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 12px;
+  font-size: var(--yq-font-xs);
+  color: var(--yq-text-3);
+}
+.yq-topic-participants { display: flex; }
+.yq-topic-participants .yq-avatar { margin-left: -6px; border: 2px solid #fff; }
+
+.yq-topic-body { padding: 18px 20px; }
+.yq-topic-tags { display: flex; gap: 6px; margin-top: 12px; }
+
+.yq-topic-replies { display: flex; flex-direction: column; gap: 10px; margin: 14px 0; }
+.yq-topic-reply { display: flex; gap: 11px; padding: 14px 16px; }
+.yq-topic-reply-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--yq-font-xs);
+  margin-bottom: 5px;
+}
+.yq-topic-reply-meta b { font-size: var(--yq-font-sm); color: var(--yq-text-1); font-weight: 600; }
+.yq-topic-reply-meta span { color: var(--yq-text-4); }
+.yq-topic-reply-text { font-size: var(--yq-font-base); color: var(--yq-text-2); line-height: 1.75; }
+.yq-topic-reply-foot { display: flex; gap: 14px; margin-top: 8px; }
+.yq-topic-reply-foot button { font-size: var(--yq-font-xs); color: var(--yq-text-4); }
+.yq-topic-reply-foot button:hover { color: var(--yq-primary); }
+
+.yq-topic-composer { padding: 14px 16px; }
+.yq-topic-input {
+  width: 100%;
+  min-height: 70px;
+  border: none;
+  outline: none;
+  resize: vertical;
+  font-size: var(--yq-font-base);
+  line-height: 1.7;
+  margin-top: 4px;
+}
+.yq-topic-composer-foot {
+  display: flex;
+  align-items: center;
+  padding-top: 10px;
+  border-top: 1px solid var(--yq-border-1);
+}
+
+/* ============================================================
+   数据导入
+   ============================================================ */
+.yq-import { display: flex; flex-direction: column; gap: 10px; }
+.yq-import .yq-radio-label { line-height: 1.6; }
+.yq-import-drop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 92px;
+  border: 1.5px dashed var(--yq-border-2);
+  border-radius: var(--yq-radius-md);
+  background: var(--yq-bg-2);
+  color: var(--yq-text-3);
+  font-size: var(--yq-font-sm);
+  cursor: pointer;
+  transition: all var(--yq-dur-fast) var(--yq-ease);
+  margin-top: 4px;
+}
+.yq-import-drop:hover { border-color: var(--yq-primary); color: var(--yq-primary); background: var(--yq-primary-light); }
+.yq-import-drop input { display: none; }
+
+/* ---------------- Markdown 文件夹导入：预览 ---------------- */
+
+.yq-mdplan {
+  margin-top: 4px;
+  border: 1px solid var(--yq-border-1);
+  border-radius: var(--yq-radius-md);
+  background: var(--yq-bg-2);
+  max-height: 340px;
+  overflow: auto;
+}
+
+.yq-mdplan-head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 10px 12px;
+  background: var(--yq-bg-1);
+  border-bottom: 1px solid var(--yq-border-1);
+  font-size: var(--yq-font-sm);
+  color: var(--yq-text-2);
+}
+
+.yq-mdplan-head b { color: var(--yq-primary); }
+
+.yq-mdplan-tree { padding: 8px 12px 12px; }
+
+.yq-mdplan-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 4px 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: var(--yq-font-sm);
+  color: var(--yq-text-1);
+  text-align: left;
+}
+
+.yq-mdplan-count {
+  margin-left: auto;
+  font-size: var(--yq-font-xs);
+  color: var(--yq-text-4);
+}
+
+.yq-mdplan-doc {
+  display: block;
+  padding: 3px 0;
+  font-size: var(--yq-font-sm);
+  color: var(--yq-text-2);
+}
+
+/* 转换预览：让用户在落库前就看出「这篇会被转成什么」 */
+.yq-mdplan-preview {
+  margin: 2px 0 8px;
+  padding: 6px 8px;
+  border-left: 2px solid var(--yq-border-2);
+  background: var(--yq-bg-1);
+  border-radius: 0 var(--yq-radius-xs) var(--yq-radius-xs) 0;
+  font-family: var(--yq-font-mono, monospace);
+  font-size: var(--yq-font-xs);
+  line-height: 1.6;
+  color: var(--yq-text-3);
+  white-space: pre-wrap;
+}
+
+.yq-mdplan-skip {
+  padding: 8px 12px;
+  border-top: 1px solid var(--yq-border-1);
+  font-size: var(--yq-font-xs);
+  color: var(--yq-warning);
+}
+
+/* 快捷键的生效范围标注：让人知道「这个键在哪儿按」，
+   而不是列一串按了没反应的键 */
+.yq-help-kbd-scope {
+  font-style: normal;
+  font-size: var(--yq-font-xs);
+  color: var(--yq-text-4);
+  margin-left: auto;
+  padding-left: 10px;
+  white-space: nowrap;
+}
+
+/* ============================================================
+   操作日志（设置 → 操作日志，仅管理员可见）
+   ============================================================ */
+
+.yq-audit-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0 12px;
+}
+
+.yq-audit-list {
+  border: 1px solid var(--yq-border-1);
+  border-radius: var(--yq-radius-md);
+  overflow: hidden;
+  max-height: 460px;
+  overflow-y: auto;
+}
+
+.yq-audit-row {
+  display: grid;
+  grid-template-columns: 96px 132px 1fr 1.4fr;
+  gap: 10px;
+  align-items: center;
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--yq-border-1);
+  font-size: var(--yq-font-sm);
+}
+.yq-audit-row:last-child { border-bottom: none; }
+
+.yq-audit-when { color: var(--yq-text-4); font-size: var(--yq-font-xs); }
+.yq-audit-action { color: var(--yq-text-1); font-weight: 500; }
+.yq-audit-who { color: var(--yq-text-2); }
+.yq-audit-target {
+  color: var(--yq-text-3);
+  font-size: var(--yq-font-xs);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* ============================================================
+   导入：格式选择 + 进度条（2026-10-16 照真实语雀补的）
+   ============================================================ */
+.yq-imppick { display: flex; flex-direction: column; gap: 6px; }
+.yq-imppick-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  width: 100%; text-align: left; padding: 10px 12px;
+  border: 1px solid var(--yq-border-1); border-radius: var(--yq-radius-md);
+  background: var(--yq-bg-1); cursor: pointer;
+  transition: border-color var(--yq-dur-fast), background var(--yq-dur-fast);
+}
+.yq-imppick-item:hover { border-color: var(--yq-primary); background: var(--yq-bg-2); }
+.yq-imppick-icon { font-size: 18px; line-height: 1.3; flex-shrink: 0; }
+.yq-imppick-main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.yq-imppick-name {
+  font-size: var(--yq-font-sm); font-weight: 600; color: var(--yq-text-1);
+  display: flex; align-items: center; gap: 8px;
+}
+.yq-imppick-ext {
+  font-size: var(--yq-font-xs); font-weight: 400; color: var(--yq-text-3);
+  background: var(--yq-bg-3); padding: 1px 6px; border-radius: var(--yq-radius-sm);
+}
+.yq-imppick-desc { font-size: var(--yq-font-xs); color: var(--yq-text-3); line-height: 1.5; }
+/* 落地到哪个库（2026-10-18）。
+   ⚠️ 这个文件名叫 Help.css，但它**其实是全局的** ——
+   App.tsx 里 `import Help from '@/pages/Help'` 是**急切导入**（不是 lazy），
+   所以这份 CSS 进首屏 bundle，设置页、目录树里的导入框一样有样式。
+   （一度以为「只有 Help.tsx 引了 = 别处没样式」，那个判据是错的：
+   关键不在谁 import 了它，而在它有没有进首屏 chunk。） */
+.yq-imppick-target {
+  font-size: var(--yq-font-xs); color: var(--yq-text-2); line-height: 1.5;
+  padding: 7px 10px; margin-bottom: 2px;
+  background: var(--yq-bg-2); border-radius: var(--yq-radius-sm);
+}
+
+/* 进度条。
+   「解析中」是不定量的（解 zip / 读 xlsx 要多久取决于文件），
+   所以那一段用条纹动画，而不是报一个编出来的百分比 ——
+   报一个假进度比不报更糟：用户会以为快好了，然后它卡住。 */
+.yq-impprog { margin: 12px 0; }
+.yq-impprog-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-size: var(--yq-font-xs); color: var(--yq-text-3); margin-bottom: 6px;
+}
+.yq-impprog-pct { color: var(--yq-text-2); font-variant-numeric: tabular-nums; }
+.yq-impprog-track { height: 6px; border-radius: 3px; background: var(--yq-bg-3); overflow: hidden; }
+.yq-impprog-bar { height: 100%; background: var(--yq-primary); transition: width 0.2s var(--yq-ease); }
+.yq-impprog-bar[data-indeterminate="1"] {
+  background-image: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+  background-size: 40px 100%; background-repeat: no-repeat;
+  animation: yq-impprog-move 1.1s linear infinite;
+}
+@keyframes yq-impprog-move {
+  from { background-position: -40px 0; }
+  to { background-position: 100% 0; }
+}

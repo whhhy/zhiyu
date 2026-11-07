@@ -1,0 +1,70 @@
+.yq-notes-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.yq-notes-composer {
+  padding: 14px 16px;
+  margin-bottom: 24px;
+}
+.yq-notes-composer-row { display: flex; gap: 11px; }
+.yq-notes-input {
+  flex: 1;
+  min-width: 0;
+  min-height: 62px;
+  border: none;
+  outline: none;
+  resize: vertical;
+  font-size: var(--yq-font-base);
+  line-height: 1.7;
+  color: var(--yq-text-1);
+}
+.yq-notes-input::placeholder { color: var(--yq-text-4); }
+.yq-notes-composer-foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--yq-border-1);
+}
+.yq-notes-count { font-size: var(--yq-font-xs); color: var(--yq-text-4); }
+
+.yq-notes-timeline { position: relative; }
+.yq-note { display: flex; gap: 12px; }
+.yq-note-rail { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+.yq-note-line { flex: 1; width: 2px; background: var(--yq-border-1); margin-top: 6px; }
+.yq-note-body { flex: 1; min-width: 0; padding: 14px 16px; margin-bottom: 14px; }
+.yq-note-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: var(--yq-font-xs);
+  margin-bottom: 6px;
+}
+.yq-note-head b { font-size: var(--yq-font-sm); color: var(--yq-text-1); font-weight: 600; }
+.yq-note-head span { color: var(--yq-text-4); }
+.yq-note-text { font-size: var(--yq-font-base); color: var(--yq-text-2); line-height: 1.75; white-space: pre-wrap; }
+.yq-note-img { max-width: 100%; border-radius: var(--yq-radius-md); margin-top: 10px; }
+.yq-note-foot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--yq-border-1);
+}
+.yq-note-act {
+  font-size: var(--yq-font-xs);
+  color: var(--yq-text-3);
+  padding: 3px 8px;
+  border-radius: var(--yq-radius-sm);
+  transition: all var(--yq-dur-fast);
+}
+.yq-note-act:hover { background: var(--yq-bg-3); color: var(--yq-text-1); }
+.yq-note-act.is-liked { color: var(--yq-danger); }
+
+.yq-notes-topics { margin-top: 28px; }

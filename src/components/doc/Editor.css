@@ -1,0 +1,875 @@
+/* ============================================================
+   块编辑器
+   ============================================================ */
+
+.yq-editor {
+  position: relative;
+  /* 优先用「编辑器字号」偏好（在 .yq-doc-content 上设的 --yq-doc-font）。
+     没有这个变量时回落到原来的 token —— 本地模式 / 卡片全屏等地方
+     不走 DocPage 的那一套，得有个默认值。
+     之前这里写死 var(--yq-font-md)，把上一级继承下来的字号截断了：
+     偏好设成「大」之后 .yq-doc-content 已经是 17px，正文却还是 15px。 */
+  font-size: var(--yq-doc-font, var(--yq-font-md));
+  line-height: var(--yq-lh-loose);
+  color: var(--yq-text-2);
+}
+
+.yq-editor-blocks { padding: 8px 0 120px; }
+
+.yq-editor-tail { height: 26px; cursor: text; }
+
+/* ---------------- 块 ---------------- */
+
+.yq-block {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  margin: 1px 0;
+  border-radius: var(--yq-radius-sm);
+  transition: background var(--yq-dur-fast);
+}
+.yq-block:hover { background: #fafbfc; }
+.yq-block.is-active { background: transparent; }
+.yq-block.is-dragging { opacity: 0.4; }
+.yq-block.is-over { box-shadow: inset 0 2px 0 var(--yq-primary); }
+
+/* ---------------- 块多选（语雀） ----------------
+   勾选框放在**块外面**（Editor.tsx 里是 Fragment 的第一个子节点），
+   所以用 absolute 相对块定位，并留出左边距，别把正文顶歪。 */
+.yq-block-selectbox {
+  position: absolute;
+  left: -22px;
+  top: 6px;
+  width: 15px;
+  height: 15px;
+  border: 1.5px solid var(--yq-border-2);
+  border-radius: 3px;
+  background: #fff;
+  cursor: pointer;
+  padding: 0;
+  z-index: 2;
+  transition: border-color var(--yq-dur-fast), background var(--yq-dur-fast);
+}
+.yq-block-selectbox:hover { border-color: var(--yq-primary); }
+.yq-block-selectbox.is-on {
+  background: var(--yq-primary);
+  border-color: var(--yq-primary);
+}
+.yq-block-selectbox.is-on::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 0.5px;
+  width: 4px;
+  height: 8px;
+  border: solid #fff;
+  border-width: 0 1.6px 1.6px 0;
+  transform: rotate(42deg);
+}
+/* 选中态的底色要盖过 hover —— 语雀是明显的蓝底 */
+.yq-block.is-selected {
+  background: var(--yq-primary-light);
+  box-shadow: inset 3px 0 0 var(--yq-primary);
+}
+/* 多选进行中时，未选中的块**不能**抢走文本选区（否则 ⌘ 点会变成拖选文字） */
+.yq-block.is-selecting { user-select: none; }
+
+/* 底部批量操作条 */
+.yq-bulkbar {
+  position: sticky;
+  bottom: 16px;
+  margin: 12px auto 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  padding: 6px 10px;
+  border-radius: var(--yq-radius-md);
+  background: var(--yq-bg-1);
+  border: 1px solid var(--yq-border-1);
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.14);
+  z-index: 20;
+}
+.yq-bulkbar-count {
+  font-size: var(--yq-font-sm);
+  color: var(--yq-text-2);
+  padding-right: 4px;
+}
+.yq-bulkbar-btn {
+  border: 1px solid var(--yq-border-1);
+  background: var(--yq-bg-2);
+  border-radius: var(--yq-radius-sm);
+  padding: 3px 10px;
+  font-size: var(--yq-font-sm);
+  color: var(--yq-text-1);
+  cursor: pointer;
+}
+.yq-bulkbar-btn:hover { background: var(--yq-bg-3); }
+.yq-bulkbar-btn.is-danger { color: var(--yq-danger); border-color: var(--yq-danger); }
+
+.yq-block-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  position: relative;
+  padding: 1px 0;
+}
+
+/* 左侧操作条 —— hover 才出现 */
+.yq-block-gutter {
+  position: absolute;
+  left: -52px;
+  top: 1px;
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  opacity: 0;
+  transition: opacity var(--yq-dur-fast) var(--yq-ease);
+  width: 48px;
+  justify-content: flex-end;
+  padding-right: 4px;
+}
+.yq-block:hover .yq-block-gutter,
+.yq-block.is-active .yq-block-gutter { opacity: 1; }
+
+/* 绿色 + 号 */
+.yq-block-add {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--yq-green);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(70, 177, 96, 0.4);
+  transition: transform var(--yq-dur-fast) var(--yq-ease), background var(--yq-dur-fast);
+}
+.yq-block-add:hover { background: var(--yq-green-hover); transform: scale(1.1); }
+
+/* 拖拽柄 + 类型菜单 */
+.yq-block-type-menu {
+  position: relative;
+  /* 这里原来只有 `position: relative`，而它里面唯一的子元素
+     `.yq-block-type-panel` 是 `display: none` —— 于是这个 div 塌成 0 × 0。
+     而打开面板的唯一方式是 `.yq-block-type-menu:hover .yq-block-type-panel`，
+     也就是「hover 一个 0×0 的元素」，**永远不成立**。
+     实测（test-blockrender 之前先量过）：操作条 48×20 正常，
+     菜单容器 0×0，hover 超时，鼠标移到它的坐标上、hover 操作条，面板都不出现。
+     也就是说「块类型」菜单在真实界面里从来就没被打开过 ——
+     换个块类型只能靠 markdown 快捷键（### / > / ``` ）。
+     给它一个真实的命中区，面板才打得开。 */
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--yq-radius-sm);
+  color: var(--yq-text-4);
+  cursor: pointer;
+}
+.yq-block-type-menu:hover { background: var(--yq-bg-4); color: var(--yq-text-2); }
+/** 当前块类型的字形：给这个菜单一个看得见的把手，不然打得开也没人知道 */
+.yq-block-type-trigger {
+  font-size: 11px;
+  line-height: 1;
+  pointer-events: none;
+}
+.yq-block-grip {
+  width: 20px;
+  height: 20px;
+  border-radius: var(--yq-radius-sm);
+  color: var(--yq-text-4);
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: -1px;
+  transition: all var(--yq-dur-fast);
+}
+.yq-block-grip:hover { background: var(--yq-bg-4); color: var(--yq-text-2); }
+
+.yq-block-type-panel {
+  position: absolute;
+  left: 18px;
+  top: 22px;
+  width: 216px;
+  background: var(--yq-bg-1);
+  border: 1px solid var(--yq-border-1);
+  border-radius: var(--yq-radius-md);
+  box-shadow: var(--yq-shadow-md);
+  padding: 6px;
+  z-index: 20;
+  display: none;
+}
+.yq-block-type-menu:hover .yq-block-type-panel { display: block; }
+/** 悬停整条操作条也开：用户瞄准的是操作条，不是里面那个 20×20 的小格子 */
+.yq-block-gutter:hover .yq-block-type-panel { display: block; }
+.yq-block-type-group { margin-bottom: 6px; }
+.yq-block-type-group:last-child { margin-bottom: 0; }
+.yq-block-type-label {
+  font-size: 11px;
+  color: var(--yq-text-4);
+  padding: 3px 6px;
+  font-weight: 500;
+}
+.yq-block-type-items { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; }
+.yq-block-type-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 7px;
+  border-radius: var(--yq-radius-sm);
+  font-size: var(--yq-font-xs);
+  color: var(--yq-text-2);
+  text-align: left;
+  transition: background var(--yq-dur-fast);
+}
+.yq-block-type-item:hover { background: var(--yq-bg-3); }
+.yq-block-type-item.is-active { background: var(--yq-primary-light); color: var(--yq-primary); }
+.yq-block-type-icon {
+  width: 17px;
+  height: 17px;
+  border-radius: 3px;
+  background: var(--yq-bg-3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--yq-text-3);
+  flex-shrink: 0;
+}
+.yq-block-type-item.is-active .yq-block-type-icon { background: var(--yq-primary); color: #fff; }
+
+/* 块右上角 ··· */
+.yq-block-more {
+  position: absolute;
+  right: -30px;
+  top: 3px;
+  width: 22px;
+  height: 20px;
+  border-radius: var(--yq-radius-sm);
+  color: var(--yq-text-4);
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--yq-dur-fast);
+}
+.yq-block:hover .yq-block-more { opacity: 1; }
+.yq-block-more:hover { background: var(--yq-bg-3); color: var(--yq-text-1); }
+
+/* ---------------- 块类型样式 ---------------- */
+
+.yq-block-text {
+  flex: 1;
+  min-width: 0;
+  outline: none;
+  word-break: break-word;
+  white-space: pre-wrap;
+  min-height: 1.8em;
+}
+.yq-block-text:empty::before,
+.yq-block-text[data-placeholder]:empty::before {
+  content: attr(data-placeholder);
+  color: var(--yq-text-4);
+  pointer-events: none;
+  position: absolute;
+}
+.yq-block-text:focus { outline: none; }
+
+.yq-block-p .yq-block-text { line-height: var(--yq-lh-loose); }
+.yq-block-p.is-active .yq-block-text,
+.yq-block-p:first-child .yq-block-text { line-height: var(--yq-lh-loose); }
+
+.yq-block-h1 .yq-block-text {
+  /* 用 em 而不是 px：正文区的基准字号由「编辑器字号」偏好决定，
+     标题必须跟着一起缩放 —— 否则把正文调成 13px、标题还是 32px，会很怪。 */
+  font-size: 2.1em;
+  font-weight: 700;
+  color: var(--yq-text-1);
+  line-height: 1.35;
+  margin: 18px 0 4px;
+  letter-spacing: -0.3px;
+}
+.yq-block-h2 .yq-block-text {
+  font-size: 1.6em;
+  font-weight: 600;
+  color: var(--yq-text-1);
+  line-height: 1.4;
+  margin: 16px 0 4px;
+}
+.yq-block-h3 .yq-block-text {
+  font-size: 1.27em;
+  font-weight: 600;
+  color: var(--yq-text-1);
+  line-height: 1.45;
+  margin: 14px 0 3px;
+}
+.yq-block-h4 .yq-block-text {
+  font-size: 1.07em;
+  font-weight: 600;
+  color: var(--yq-text-1);
+  line-height: 1.5;
+  margin: 12px 0 2px;
+}
+
+.yq-block-ul, .yq-block-ol, .yq-block-todo { padding-left: 26px; }
+.yq-block-ul .yq-block-main::before {
+  content: '';
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--yq-text-3);
+}
+.yq-block-ol .yq-block-main::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 0;
+  width: 18px;
+  height: 100%;
+  color: var(--yq-text-3);
+  font-size: var(--yq-font-base);
+  line-height: 1.8;
+}
+
+.yq-block-quote .yq-block-text {
+  border-left: 3px solid var(--yq-border-3);
+  padding-left: 12px;
+  color: var(--yq-text-3);
+  font-style: italic;
+}
+
+/* 选择器写成两级 `.yq-block.yq-block-callout`，是为了压过上面 31/32 行那两条：
+     `.yq-block:hover { background: #fafbfc }` 和
+     `.yq-block.is-active { background: transparent }`
+   它们都是 (0,2,0)，而原来单写的 `.yq-block-callout` 只有 (0,1,0) ——
+   于是**正在编辑的高亮块底色被强制透明，悬停时被刷成近白色**。
+   现象是「鼠标一碰上去，高亮块就不亮了」，而这条规则在源码里看着完全正常。
+
+   实测（CDP `CSS.getMatchedStylesForNode`，不是读 CSS 猜的）：
+     元素 class = `yq-block yq-block-callout is-active`
+     命中三条 background 规则，按层叠胜出的是 `.yq-block.is-active → transparent`
+     同一个 class 的干净 div 挂到 body 上则是 `rgb(232,241,252)`（= --yq-primary-light）
+   所以不是这条规则写错了，是被上面两条盖掉了。
+
+   写成两级之后同为 (0,2,0)，而本条在源码里更靠后 → 同分时后者胜 → 底色保住。
+   顺带把 `&.is-active` 的 hover 底色也一并保住：高亮块有自己的表面，
+   外面那层 hover 底色对它本来就没有意义。 */
+.yq-block.yq-block-callout {
+  background: var(--yq-primary-light);
+  border-radius: var(--yq-radius-md);
+  padding: 12px 14px;
+  margin: 8px 0;
+  border: 1px solid var(--yq-primary-light-2);
+}
+.yq-block-callout .yq-block-text { color: var(--yq-text-1); }
+/* emoji 在 JSX 里排在正文之后，用 order 把它挪到左边 */
+.yq-block-callout .yq-callout-emoji { order: -1; }
+.yq-callout-emoji {
+  font-size: 16px;
+  margin-right: 9px;
+  margin-left: 0;
+  flex-shrink: 0;
+  line-height: 1.75;
+  align-self: flex-start;
+}
+
+/* todo */
+.yq-block-todo { padding-left: 0; align-items: flex-start; }
+.yq-todo-box {
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--yq-border-3);
+  border-radius: var(--yq-radius-xs);
+  margin: 6px 9px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  flex-shrink: 0;
+  transition: all var(--yq-dur-fast) var(--yq-ease);
+}
+.yq-todo-box:hover { border-color: var(--yq-primary); }
+.yq-todo-box.is-checked { background: var(--yq-green); border-color: var(--yq-green); }
+.yq-block-todo:has(.yq-todo-box.is-checked) .yq-block-text {
+  color: var(--yq-text-4);
+  text-decoration: line-through;
+}
+/* 指派人：语雀是 hover 才出现，不常驻占位 */
+.yq-todo-assignee {
+  flex-shrink: 0;
+  margin-left: 8px;
+  opacity: 0;
+  transition: opacity var(--yq-dur-fast);
+}
+.yq-block:hover .yq-todo-assignee { opacity: 1; }
+.yq-todo-assignee-avatar {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--yq-bg-3);
+  color: var(--yq-text-4);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+}
+
+/* 分割线 */
+.yq-block-divider { padding: 12px 0; width: 100%; cursor: pointer; }
+.yq-divider hr {
+  border: none;
+  border-top: 1px solid var(--yq-border-2);
+  margin: 0;
+}
+
+/* 代码块 */
+.yq-block-code {
+  background: #f7f8fa;
+  border: 1px solid var(--yq-border-1);
+  border-radius: var(--yq-radius-md);
+  margin: 8px 0;
+  overflow: hidden;
+  position: relative;
+}
+.yq-block-code .yq-block-main { display: block; padding: 0; }
+.yq-code-lang {
+  padding: 5px 10px;
+  border-bottom: 1px solid var(--yq-border-1);
+  background: #f2f4f6;
+}
+.yq-code-lang select {
+  border: none;
+  background: transparent;
+  font-size: 11px;
+  color: var(--yq-text-3);
+  outline: none;
+  cursor: pointer;
+  font-family: var(--yq-font-mono);
+}
+.yq-code-body {
+  padding: 12px 14px;
+  outline: none;
+  font-family: var(--yq-font-mono);
+  font-size: var(--yq-font-sm);
+  line-height: 1.65;
+  color: #d63384;
+  white-space: pre-wrap;
+  min-height: 40px;
+  tab-size: 2;
+}
+
+/* 图片块 */
+.yq-block-image { margin: 8px 0; }
+.yq-img-block img { max-width: 100%; border-radius: var(--yq-radius-md); }
+
+/*
+ * 图片块的悬浮工具条（语雀：图片是卡片，悬浮时左上角出现它自己的工具条）。
+ *
+ * ⚠️ 以前图片块上**一个按钮都没有** —— 表格块有（`.yq-card-toolbar`），
+ * 图片却没有。于是「复制这张图」这件事在图片上**没有任何入口**
+ * （用户 2026-10-19 报「编辑界面的图片不能复制」）。
+ * ⇒ 同一类卡片给同一套工具条，不要一张有一张没有。
+ */
+/*
+ * 图片块：**图片 + 同行尾巴文字**（语雀就是这样 —— 用户 2026-10-20 的实测截图：
+ * 图片右边紧跟着文字，同一行）。
+ * ⇒ 图片块的 `text` 装的就是「图片后面那段话」，渲染在图片**右边**。
+ *   · `.yq-img-col` = 图片本体（工具条 + 图 + 文件名），宽度跟着图片走
+ *   · `.yq-img-text` = 右边那段，吃掉剩下的宽度
+ */
+.yq-img-block {
+  position: relative;
+  display: flex;
+  /*
+   * ⚠️ **列排**：文字在图片**下面**，不是右边。
+   *   （用户 2026-10-20：「文字在中间，而不是下面」—— 之前那版把它排成了
+   *    `align-items: center` 的**同行居中**，那是照着语雀那张小图猜的，
+   *    而用户要的是图片**下面**那一行。）
+   */
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  /*
+   * ⚠️ **必须 `flex: 1`** —— `.yq-block` 本身是 **flex 行**，
+   * 而 `.yq-img-block` 是它的**子项**：不撑开的话它只有「图片那么宽」，
+   * 右边/下边那段文字就只剩 **0 像素** ——
+   *   · 占位提示被挤成**竖排一列**（用户 2026-10-20 的截图）；
+   *   · **光标落在一个零宽的编辑区里**，视觉上就跑到上面去了（同一个症状）。
+   * 文字块的 `.yq-block-text` 本来就有 `flex: 1`，图片这边漏了。
+   */
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.yq-img-col { position: relative; flex: 0 0 auto; max-width: 100%; }
+/* 尾巴文字：图片**下面**那一行，占满整行（它是正文，不是图片的附属物） */
+.yq-img-text { flex: 0 0 auto; width: 100%; min-height: 1.8em; }
+/*
+ * 占位提示：**整个去掉**。
+ *   用户 2026-10-20：「鼠标放在图片上面，会显示在图片后面写点文字，这些都是问题」——
+ *   悬停时冒出来既吵，又像应用把提示当正文填进去了（聚焦时同理）。
+ *   ⇒ 图片下面那一行就是**普通的正文行**，空着就空着（和别的空段落一样）。
+ *   它是伪元素，不进 innerText（不污染复制/搜索/字数那些路）。
+ */
+.yq-img-text::before { content: none !important; }
+.yq-img-toolbar {
+  position: absolute;
+  top: -26px;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity var(--yq-dur-fast);
+  z-index: 3;
+  /*
+   * ⚠️ **不可见时必须不吃指针事件**（2026-10-20 实测出来的 bug）。
+   *
+   * 这条工具条浮在图片**上方** 26px，而那里正是**上一段文字**所在的位置。
+   * `opacity: 0` 的元素**照样接收指针事件** —— 于是：
+   *   · 点上一段文字的中点，命中的是**看不见的「下载图片」**（实测：
+   *     段落 x=494~540 那一条被整条吃掉，点下去直接开始下载）；
+   *   · 也就是说「图片上面那段字有一部分点不动」。
+   *
+   * 为什么隐藏时不能吃事件、显形时又能点到（位置不用挪）：
+   *   工具条紧贴块的边缘，鼠标从图片往上移到工具条是**连续**的 ——
+   *   中间没有「既不在图片里、也不在工具条里」的缝隙。
+   *   而工具条是 `.yq-img-block` 的子元素，指针停在它上面时父级仍然算 hover，
+   *   所以它不会在鼠标移过去的中途消失。
+   */
+  pointer-events: none;
+}
+.yq-img-block:hover .yq-img-toolbar { opacity: 1; pointer-events: auto; }
+.yq-img-toolbar button,
+.yq-img-toolbar a {
+  width: 22px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--yq-radius-sm);
+  background: transparent;
+  color: var(--yq-text-3);
+  font-size: 11px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all var(--yq-dur-fast);
+}
+.yq-img-toolbar button:hover,
+.yq-img-toolbar a:hover { background: var(--yq-bg-4); color: var(--yq-text-1); }
+
+.yq-img-block-caption {
+  margin-top: 6px;
+  font-size: var(--yq-font-xs);
+  color: var(--yq-text-4);
+  text-align: center;
+}
+
+.yq-img-block-empty.is-over {
+  border-color: var(--yq-primary);
+  background: var(--yq-primary-light);
+  color: var(--yq-primary);
+}
+
+.yq-img-block-hint {
+  color: var(--yq-text-4);
+  font-size: var(--yq-font-xs);
+}
+
+.yq-img-block-err {
+  color: var(--yq-danger);
+  font-size: var(--yq-font-xs);
+}
+.yq-img-block-empty {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px;
+  border: 1px dashed var(--yq-border-2);
+  border-radius: var(--yq-radius-md);
+  color: var(--yq-text-4);
+  font-size: var(--yq-font-sm);
+}
+.yq-img-block-empty input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: var(--yq-font-sm);
+}
+
+/* 表格块 */
+.yq-block-table { margin: 8px 0; }
+/* 表格的行/列增删按钮：平时藏起来，悬停本行/表头才出现。
+   常驻会跟内容抢注意力，而这张表在语雀里也不是每次都要动。 */
+.yq-table-op {
+  width: 28px;
+  min-width: 28px;
+  padding: 0 !important;
+  border-color: transparent !important;
+  vertical-align: middle;
+}
+.yq-table-op button {
+  width: 20px;
+  height: 20px;
+  line-height: 1;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--yq-text-4);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+tr:hover > .yq-table-op button,
+.yq-table-block th:hover > .yq-table-op button { opacity: 1; }
+.yq-table-op button:hover { background: var(--yq-bg-2); color: var(--yq-text-1); }
+.yq-table-ops td { padding: 4px 11px !important; border-color: transparent !important; }
+.yq-table-ops button {
+  margin-right: 8px;
+  border: 1px dashed var(--yq-border-1);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--yq-text-3);
+  font-size: var(--yq-font-xs);
+  padding: 2px 8px;
+  cursor: pointer;
+  opacity: 0.4;
+  transition: opacity 0.12s;
+}
+.yq-table-wrap:hover .yq-table-ops button { opacity: 1; }
+.yq-table-ops button:hover { border-style: solid; color: var(--yq-text-1); }
+/* 可编辑单元格给一点点反馈，让人知道这里能点 */
+.yq-table-block .is-editable:hover { background: var(--yq-bg-2); }
+.yq-table-block .is-editable:focus {
+  outline: 2px solid var(--yq-primary);
+  outline-offset: -2px;
+}
+.yq-table-block {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--yq-font-sm);
+}
+.yq-table-block th,
+.yq-table-block td {
+  border: 1px solid var(--yq-border-1);
+  padding: 8px 11px;
+  text-align: left;
+}
+.yq-table-block th {
+  background: var(--yq-bg-2);
+  font-weight: 600;
+  color: var(--yq-text-1);
+}
+
+/* 表格 markdown 块（正文里的 markdown 表格） */
+.yq-block-table .yq-block-text {
+  font-family: var(--yq-font-mono);
+  font-size: var(--yq-font-sm);
+  background: var(--yq-bg-2);
+  padding: 10px 12px;
+  border-radius: var(--yq-radius-md);
+  white-space: pre;
+  overflow-x: auto;
+}
+
+/* ============================================================
+   "/" 斜杠菜单
+   ============================================================ */
+.yq-slash {
+  position: fixed;
+  z-index: var(--yq-z-popover);
+  width: 260px;
+  max-height: 340px;
+  background: var(--yq-bg-1);
+  border: 1px solid var(--yq-border-1);
+  border-radius: var(--yq-radius-md);
+  box-shadow: var(--yq-shadow-md);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: yq-fade-in var(--yq-dur-fast) var(--yq-ease);
+}
+.yq-slash-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 11px;
+  font-size: 11px;
+  color: var(--yq-text-4);
+  border-bottom: 1px solid var(--yq-border-1);
+  flex-shrink: 0;
+}
+.yq-slash-q {
+  font-family: var(--yq-font-mono);
+  color: var(--yq-primary);
+  background: var(--yq-primary-light);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+.yq-slash-list { flex: 1; overflow-y: auto; padding: 4px; }
+.yq-slash-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: var(--yq-radius-sm);
+  font-size: var(--yq-font-sm);
+  color: var(--yq-text-2);
+  text-align: left;
+  transition: background var(--yq-dur-fast);
+}
+.yq-slash-item.is-active { background: var(--yq-primary-light); color: var(--yq-primary); }
+.yq-slash-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: var(--yq-radius-sm);
+  background: var(--yq-bg-3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--yq-text-3);
+  flex-shrink: 0;
+}
+.yq-slash-item.is-active .yq-slash-icon { background: var(--yq-primary); color: #fff; }
+.yq-slash-name { flex: 1; }
+.yq-slash-empty { padding: 16px; text-align: center; font-size: var(--yq-font-xs); color: var(--yq-text-4); }
+.yq-slash-foot {
+  padding: 6px 11px;
+  border-top: 1px solid var(--yq-border-1);
+  font-size: 10px;
+  color: var(--yq-text-4);
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   "/" 卡片面板（语雀 40+ 特色卡片）
+   ============================================================ */
+.yq-slash-cards { width: 300px; max-height: 440px; }
+
+.yq-slash-tip { font-size: 10px; color: var(--yq-text-4); font-weight: 400; }
+
+.yq-slash-group { margin-bottom: 4px; }
+.yq-slash-group-label {
+  font-size: 10px;
+  color: var(--yq-text-4);
+  padding: 6px 8px 3px;
+  font-weight: 500;
+  position: sticky;
+  top: 0;
+  background: var(--yq-bg-1);
+  z-index: 1;
+}
+.yq-slash-group-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+}
+.yq-slash-group-grid .yq-slash-item { padding: 5px 6px; gap: 7px; }
+.yq-slash-en {
+  font-size: 10px;
+  color: var(--yq-text-4);
+  flex-shrink: 0;
+  max-width: 62px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.yq-slash-item.is-active .yq-slash-en { color: var(--yq-primary); opacity: 0.7; }
+.yq-slash-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ============================================================
+   "@" 唤起面板
+   ============================================================ */
+.yq-mention {
+  position: fixed;
+  z-index: var(--yq-z-popover);
+  width: 250px;
+  max-height: 300px;
+  background: var(--yq-bg-1);
+  border: 1px solid var(--yq-border-1);
+  border-radius: var(--yq-radius-md);
+  box-shadow: var(--yq-shadow-md);
+  padding: 4px;
+  overflow-y: auto;
+  animation: yq-fade-in var(--yq-dur-fast) var(--yq-ease);
+}
+.yq-mention-group {
+  font-size: 10px;
+  color: var(--yq-text-4);
+  padding: 5px 8px 3px;
+  font-weight: 500;
+}
+.yq-mention-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 5px 8px;
+  border-radius: var(--yq-radius-sm);
+  font-size: var(--yq-font-sm);
+  color: var(--yq-text-2);
+  text-align: left;
+}
+.yq-mention-item.is-active { background: var(--yq-primary-light); color: var(--yq-primary); }
+.yq-mention-avatar {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--yq-bg-3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+.yq-mention-item.is-active .yq-mention-avatar { background: var(--yq-primary); color: #fff; }
+.yq-mention-name { flex: 1; min-width: 0; }
+
+/* ============================================================
+   卡片悬浮工具条（语雀：表格/图片等卡片悬浮时出现）
+   ============================================================ */
+.yq-card-wrap { position: relative; width: 100%; }
+.yq-card-toolbar {
+  position: absolute;
+  top: -26px;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity var(--yq-dur-fast);
+  z-index: 3;
+  /* 同 `.yq-img-toolbar`：不可见时不吃指针事件，否则盖住**上一段文字**的左边一截 */
+  pointer-events: none;
+}
+.yq-card-wrap:hover .yq-card-toolbar { opacity: 1; pointer-events: auto; }
+.yq-card-toolbar button {
+  width: 22px;
+  height: 20px;
+  border-radius: var(--yq-radius-sm);
+  color: var(--yq-text-3);
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--yq-dur-fast);
+}
+.yq-card-toolbar button:hover { background: var(--yq-bg-4); color: var(--yq-text-1); }
+.yq-card-toolbar button.is-on { background: var(--yq-primary-light); color: var(--yq-primary); }

@@ -1,0 +1,164 @@
+/* ============================================================
+   文档大纲 —— 钉住 / 隐藏(mini) 两态
+   ============================================================ */
+
+.yq-outline {
+  width: var(--yq-outline-w);
+  border-left: 1px solid var(--yq-border-1);
+  background: var(--yq-bg-1);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+/* 悬浮浮层形态（mini 态展开时） */
+.yq-outline-float {
+  position: fixed;
+  right: 12px;
+  top: 96px;
+  bottom: 12px;
+  z-index: var(--yq-z-dropdown);
+  border: 1px solid var(--yq-border-1);
+  border-radius: var(--yq-radius-md);
+  box-shadow: var(--yq-shadow-md);
+  overflow: hidden;
+}
+
+/* mini 态容器：固定在右侧边缘，不占布局宽度 */
+.yq-outline-mini-wrap {
+  position: fixed;
+  right: 0;
+  top: 96px;
+  bottom: 12px;
+  z-index: var(--yq-z-header);
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+.yq-outline-mini-wrap > * { pointer-events: auto; }
+
+/* 收起态：贴着右边缘的细把手 */
+.yq-outline-mini {
+  width: 14px;
+  height: 68px;
+  background: var(--yq-bg-1);
+  border: 1px solid var(--yq-border-1);
+  border-right: none;
+  border-radius: var(--yq-radius-sm) 0 0 var(--yq-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--yq-dur-base) var(--yq-ease);
+  box-shadow: -1px 0 4px rgba(31, 35, 41, 0.05);
+}
+.yq-outline-mini:hover {
+  width: 18px;
+  background: var(--yq-primary-light);
+  border-color: var(--yq-primary-border);
+}
+.yq-outline-mini-dots {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  align-items: center;
+}
+.yq-outline-mini-dots i {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--yq-text-4);
+  display: block;
+  transition: background var(--yq-dur-fast);
+}
+.yq-outline-mini:hover .yq-outline-mini-dots i { background: var(--yq-primary); }
+/* 展开时收起把手 */
+.yq-outline-mini-wrap.is-open .yq-outline-mini { opacity: 0; pointer-events: none; }
+
+/* mini 态下浮层必须彻底隐藏，鼠标滑入才出现（语雀行为） */
+.yq-outline-mini-wrap:not(.is-open) .yq-outline-float {
+  display: none;
+}
+
+.yq-outline-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 8px 8px 14px;
+  border-bottom: 1px solid var(--yq-border-1);
+  font-size: var(--yq-font-xs);
+  color: var(--yq-text-3);
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+/* 图钉：语雀的「钉住 / 隐藏大纲」 */
+.yq-outline-pin {
+  width: 22px;
+  height: 22px;
+  border-radius: var(--yq-radius-sm);
+  color: var(--yq-text-4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--yq-dur-fast);
+}
+.yq-outline-pin:hover { background: var(--yq-primary-light); color: var(--yq-primary); }
+.yq-outline-pin.is-active { color: var(--yq-primary); }
+
+.yq-outline-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 8px 12px;
+}
+
+.yq-outline-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 5px 8px;
+  border-radius: var(--yq-radius-sm);
+  font-size: var(--yq-font-sm);
+  color: var(--yq-text-3);
+  line-height: 1.5;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border-left: 2px solid transparent;
+  transition: all var(--yq-dur-fast);
+}
+.yq-outline-item:hover { background: var(--yq-bg-2); color: var(--yq-text-1); }
+.yq-outline-item.is-active {
+  color: var(--yq-primary);
+  background: var(--yq-primary-light);
+  border-left-color: var(--yq-primary);
+  font-weight: 500;
+}
+.yq-outline-lv-h1 { font-weight: 600; color: var(--yq-text-2); }
+.yq-outline-lv-h2 { padding-left: 18px; }
+.yq-outline-lv-h3 { padding-left: 30px; font-size: var(--yq-font-xs); }
+.yq-outline-lv-h4 { padding-left: 42px; font-size: var(--yq-font-xs); color: var(--yq-text-4); }
+
+.yq-outline-empty {
+  padding: 24px 8px;
+  text-align: center;
+  color: var(--yq-text-4);
+  font-size: var(--yq-font-xs);
+  line-height: 1.8;
+}
+.yq-outline-empty span { font-size: 11px; opacity: 0.7; }
+
+.yq-outline-foot {
+  padding: 10px 14px;
+  border-top: 1px solid var(--yq-border-1);
+  font-size: 11px;
+  color: var(--yq-text-4);
+  flex-shrink: 0;
+}
+.yq-outline-stat {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 3px;
+}
+.yq-outline-readtime { color: var(--yq-text-4); }

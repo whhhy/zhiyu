@@ -1,0 +1,100 @@
+# 内网部署编排
+#   docker compose up -d
+#
+# 数据落在 ./data（宿主机目录），重建容器不会丢知识库内容。
+
+services:
+  yuque:
+    build:
+      context: .
+      # ⚠️⚠️ 2026-10-08 补的：原来这里只有 `build: .`，**没有 args**。
+      #   于是 DEPLOY.md 开头教的「公司有内部 npm 镜像，把地址换成自己的」
+      #   在 `docker compose up` 这条路上**完全无效** ——
+      #   `NPM_REGISTRY=... docker compose up -d` 那个环境变量根本进不了
+      #   构建阶段，容器里 `npm ci` 用的仍是 Dockerfile 的默认值（公网源）。
+      #
+      #   实测：这台机器不通公网，不传就 `npm ci ... exit code: 1`，
+      #   **镜像构建直接失败**。而内网机器恰恰大多不通公网 ——
+      #   也就是说照文档走，**第一次构建就挂**。
+      #
+      #   Docker 的 build-arg 必须**在 compose 里显式声明**才能从命令行传进来；
+      #   光在 Dockerfile 里 ARG 了不够，两处都要有。
+      args:
+        # 公司有内部 npm 镜像的，改成自己的地址。
+        # 默认值与 Dockerfile 一致：什么都不配 = 公网源（保持原状）。
+        NPM_REGISTRY: ${NPM_REGISTRY:-https://registry.npmjs.org}
+        # 挂在子路径（如 /knowledge/）时才需要；见下面 ports 那段注释。
+        VITE_API_BASE: ${VITE_API_BASE:-}
+    image: yuque-kb:latest
+    container_name: yuque-kb
+    restart: unless-stopped
+    ports:
+      # 内网通常挂在 80 或公司门户的子路径上。
+      #
+      # 想放到 https://wiki.公司内网/knowledge/ 这种子路径：
+      #   · 前端资源本来就是相对路径（vite 的 base: './'），不用管；
+      #   · **要重新构建一次**，带上**构建期**变量：
+      #         VITE_API_BASE=/knowledge npm run build
+      #     然后把下面换成 "8080:80"（nginx 那边也要先把 /knowledge/ 剥掉再转发）。
+      #
+      # ⚠️ 这里**没有**运行期的开关。早先这几行写的是「给 VQ_BASE_PATH」，
+      #    而代码里既没有 VQ_BASE_PATH 也没有 YQ_BASE_PATH —— 配了它什么也不会发生，
+      #    而症状是「页面打开了、点什么都 404」，没人会怀疑是变量名拼错了。
+      - "8080:8080"
+      #
+      # ⚠️⚠️ 映射了这一行 = **8080 是直连的**。
+      #
+      #   下面两项都建立在「请求头可信」这个前提上，而这个前提
+      #   **只在你不会直连 8080 时成立**：
+      #
+      #   · `X-Forwarded-User`（统一认证）—— 不直连，同上。
+      #   · `X-Forwarded-For`（客户端 IP）—— 不直连，否则**任何人加一个
+      #     `X-Forwarded-For: <白名单里的IP>` 请求头就能绕过知识库的
+      #     IP 白名单**，登录会话记的 IP 和分享页水印上的「阅读人 IP」
+      #     也都是他随便写的。实测过，见 DEPLOY.md 第四节。
+      #
+      #   所以：**开了统一认证或知识库 IP 白名单，就先把这一行去掉
+      #   （改用 `expose:`），或者用防火墙只放行反代的 IP。**
+      #   这一行是「开箱能用」和「默认安全」之间的取舍，本项目选了前者，
+      #   所以**那两项开关的责任就到了你身上**。
+    volumes:
+      - ./data:/data
+    environment:
+      # ---- 首次启动必填 ----
+      # 第一个注册的账号自动成为平台管理员。
+      # 正式部署前务必改掉默认口令。
+      # ⚠️ 这一行如果留着不改成真实口令，服务会**直接拒绝启动**并在日志里说明原因 ——
+      #    占位符字面量就写在仓库里，等于一个公开的管理员密码。
+      #    （确实要用它跑本机试验：加 YQ_ALLOW_PLACEHOLDER_PASSWORD=1）
+      YQ_ADMIN_ACCOUNT: admin
+      YQ_ADMIN_PASSWORD: "请改成你自己的口令"
+      YQ_ADMIN_NAME: 知识库管理员
+      # 默认**不导入演示内容**。
+      #
+      # ⚠️ 为什么默认关掉：演示数据是 4 个知识库 + 26 篇写得很真的文档，
+      # 而播种走 `seed.ts` **直插**（不走同步、也不在任何清理脚本的范围内）。
+      # 装到公司内网之后，它们会和真实文档混在同一个工作台里，
+      # 头几天很容易有人把它们当成真实内容 —— 而**没有任何东西会提醒你**。
+      #
+      # 对比上面那行口令：口令没改，服务会**拒绝启动**并在日志里说明原因；
+      # 而演示数据这条**一声不吭**。所以默认取「干净」而不是「试用方便」。
+      #
+      # 想先试用演示内容（只在本机、别放到公司内网上）：
+      # 把下面这行改成 `YQ_DEMO: "1"`，或者在 `docker compose up` 时加
+      # `YQ_DEMO=1 docker compose up -d`。
+      YQ_DEMO: "0"
+      # ---- 接公司统一认证（LDAP / AD / 企业微信都套得上）----
+      # 填上认证网关写的那个用户名请求头即可，不用改代码。
+      # ⚠️ 开启后**必须**确保 8080 端口不被直连（防火墙只放行网关），
+      #    否则任何人都能伪造这个头登录进来。详见 DEPLOY.md 第三节。
+      # YQ_SSO_HEADER: X-Forwarded-User
+      # YQ_SSO_NAME_HEADER: X-Forwarded-Name   # 中文名需编码，见 DEPLOY.md
+      # YQ_SSO_ONLY: "1"                       # 1 = 关掉本地注册与密码登录
+      PORT: "8080"
+      # TZ: Asia/Shanghai   # 容器时区，影响日志与「今天」的计算
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8080/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
