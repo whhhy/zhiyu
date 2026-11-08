@@ -6,6 +6,16 @@
 > 至今仍有乱码残留（README 6236 处、DEPLOY 1308 处 U+FFFD）。**能读的部分照用，
 > 乱码处不要猜** —— 本文件就是它们的替代品。
 
+**公开仓库**：<https://github.com/whhhy/zhiyu>（`main` 为唯一分支）
+
+```bash
+git clone https://github.com/whhhy/zhiyu.git
+```
+
+> ⚠️ 这个仓库是**公开**的：种子默认口令 `yuque@2026` 和内网地址 `192.168.1.16:8080`
+> 都写在源码/文档里（前者见 `server/index.ts` 与 `RUNBOOK.md`，后者见 `src/lib/clipboard.ts`）。
+> **部署前一定要改口令**（`YQ_ADMIN_PASSWORD`），别把默认值带到任何能被别人访问到的环境。
+
 ---
 
 ## 1. 这是什么
